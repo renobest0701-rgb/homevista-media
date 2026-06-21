@@ -1,0 +1,900 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────
+
+enum OrgType {
+  INTERNAL
+  SHOOTING_TEAM
+  CLIENT
+}
+
+enum OrgStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MemberRole {
+  SUPER_ADMIN
+  ASSET_ADMIN
+  PROJECT_MANAGER
+  UPLOADER
+  SALES
+  CLIENT_ADMIN
+  CLIENT_USER
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  INVITED
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+  CANCELLED
+}
+
+enum ShootStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum LocationType {
+  PROPERTY
+  STATION
+  PARK
+  BEACH
+  STREET
+  FACILITY
+  NATURE
+  OTHER
+}
+
+enum LocationStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PermissionType {
+  FILMING
+  AERIAL
+  INTERIOR
+  PUBLIC_SPACE
+  PRIVATE_PROPERTY
+  OTHER
+}
+
+enum PermissionStatus {
+  PENDING
+  OBTAINED
+  RENEWAL_REQUIRED
+  EXPIRED
+  NOT_REQUIRED
+  REJECTED
+}
+
+enum BatchStatus {
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum AssetType {
+  VIDEO
+  IMAGE
+  DRONE_VIDEO
+  DRONE_IMAGE
+  VIDEO_360
+  VR
+  CG
+  AUDIO
+  THUMBNAIL
+  DOCUMENT
+}
+
+enum ProductionStatus {
+  ORIGINAL
+  SELECTED_ORIGINAL
+  EDITING
+  EDITED
+  CLIENT_REVIEW
+  REVISION
+  FINAL_DELIVERY
+  WEB_DELIVERY
+  SNS_VERSION
+  ARCHIVE
+}
+
+enum SourceType {
+  CAMERA
+  DRONE
+  TIMELAPSE
+  SLOWMO
+  CG
+  OTHER
+}
+
+enum Visibility {
+  INTERNAL
+  CLIENT_ONLY
+  PUBLIC
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  NEEDS_INFO
+}
+
+enum RightsStatus {
+  PENDING
+  VALID
+  EXPIRING_SOON
+  EXPIRED
+  REVOKED
+  NOT_REQUIRED
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  AUTUMN
+  WINTER
+  YEAR_ROUND
+  CHERRY_BLOSSOM
+  FRESH_GREEN
+  AUTUMN_LEAVES
+  SNOW
+}
+
+enum TimeOfDay {
+  EARLY_MORNING
+  MORNING
+  MIDDAY
+  AFTERNOON
+  DUSK
+  TWILIGHT
+  NIGHT
+  NIGHT_VIEW
+}
+
+enum Weather {
+  SUNNY
+  CLOUDY
+  RAINY
+  SNOWY
+  AFTER_TYPHOON
+  NOT_APPLICABLE
+}
+
+enum FileRole {
+  ORIGINAL
+  SELECTED_ORIGINAL
+  EDIT_MASTER
+  CLIENT_DELIVERY
+  WEB_1080
+  WEB_720
+  PREVIEW
+  THUMBNAIL
+  SOCIAL_9_16
+  SOCIAL_1_1
+  SOCIAL_4_5
+  SUBTITLE
+  DOCUMENT
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+enum TagSource {
+  MANUAL
+  INHERITED
+  AI
+  SYSTEM
+}
+
+enum TagApprovalStatus {
+  SUGGESTED
+  APPROVED
+  REJECTED
+}
+
+enum PolicyPermission {
+  ALLOWED
+  PROHIBITED
+  REQUIRES_APPROVAL
+  NOT_SET
+}
+
+enum SiteType {
+  AREA_SITE
+  PROPERTY_SITE
+  CLIENT_SITE
+  CORPORATE_SITE
+  CAMPAIGN_SITE
+  OTHER
+}
+
+enum SiteStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ChannelType {
+  AREA_SITE
+  PROPERTY_SITE
+  CLIENT_PORTAL
+  CORPORATE_SITE
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  TIKTOK
+  LINE
+  EXTERNAL_SITE
+  OTHER
+}
+
+enum PublicationStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  UNPUBLISHED
+  ERROR
+}
+
+enum DeliveryStatus {
+  DRAFT
+  SENT
+  VIEWED
+  EXPIRED
+  CANCELLED
+}
+
+enum JobType {
+  VIDEO_INFO_EXTRACT
+  THUMBNAIL_GENERATE
+  PREVIEW_GENERATE
+  CHECKSUM_VERIFY
+  DUPLICATE_CHECK
+  AI_TAG_SUGGEST
+  EXIF_EXTRACT
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────
+// Core entities
+// ─────────────────────────────────────────────
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  nameEn    String?
+  type      OrgType
+  status    OrgStatus @default(ACTIVE)
+  logoUrl   String?
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  memberships     Membership[]
+  clients         Client[]
+  shootTeamShoots Shoot[]      @relation("ShootTeam")
+}
+
+model User {
+  id                String     @id @default(uuid())
+  supabaseId        String?    @unique
+  name              String
+  nameEn            String?
+  email             String     @unique
+  passwordHash      String?
+  preferredLanguage String     @default("ja")
+  status            UserStatus @default(ACTIVE)
+  lastLoginAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  memberships           Membership[]
+  managedShoots         Shoot[]            @relation("ShootManager")
+  uploadedBatches       UploadBatch[]
+  tagApprovals          AssetTag[]         @relation("TagApprover")
+  versionApprovals      AssetVersion[]     @relation("VersionApprover")
+  policyApprovals       AssetUsagePolicy[] @relation("PolicyApprover")
+  downloadLogs          DownloadLog[]
+  auditLogs             AuditLog[]
+  createdPermissions    PermissionRecord[] @relation("PermissionCreator")
+  updatedPermissions    PermissionRecord[] @relation("PermissionUpdater")
+  deliveryPackages      DeliveryPackage[]
+}
+
+model Membership {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  role           MemberRole
+  status         MemberStatus @default(ACTIVE)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, userId])
+}
+
+// ─────────────────────────────────────────────
+// Project hierarchy
+// ─────────────────────────────────────────────
+
+model Client {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  nameEn         String?
+  logoUrl        String?
+  status         ClientStatus @default(ACTIVE)
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  projects         Project[]
+  assets           Asset[]
+  deliveryPackages DeliveryPackage[]
+}
+
+model Project {
+  id                   String        @id @default(uuid())
+  clientId             String?
+  name                 String
+  code                 String        @unique
+  propertyName         String?
+  propertyType         String?
+  description          String?
+  countryCode          String        @default("JP")
+  prefectureCode       String?
+  municipalityCode     String?
+  address              String?
+  latitude             Float?
+  longitude            Float?
+  defaultVisibility    Visibility    @default(INTERNAL)
+  defaultUsagePolicyId String?
+  status               ProjectStatus @default(PLANNING)
+  startDate            DateTime?
+  endDate              DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  client           Client?           @relation(fields: [clientId], references: [id])
+  defaultPolicy    UsagePolicy?      @relation("DefaultPolicy", fields: [defaultUsagePolicyId], references: [id])
+  shoots           Shoot[]
+  assets           Asset[]
+  publications     AssetPublication[]
+  deliveryPackages DeliveryPackage[]
+}
+
+model Shoot {
+  id            String      @id @default(uuid())
+  projectId     String
+  name          String
+  shootDate     DateTime
+  teamOrgId     String?
+  managerUserId String?
+  status        ShootStatus @default(PLANNED)
+  uploadToken   String?     @unique @default(uuid())
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  project       Project            @relation(fields: [projectId], references: [id])
+  teamOrg       Organization?      @relation("ShootTeam", fields: [teamOrgId], references: [id])
+  manager       User?              @relation("ShootManager", fields: [managerUserId], references: [id])
+  locations     ShootLocation[]
+  permissions   PermissionRecord[]
+  uploadBatches UploadBatch[]
+  assets        Asset[]
+}
+
+model Location {
+  id               String         @id @default(uuid())
+  name             String
+  nameEn           String?
+  officialName     String?
+  locationType     LocationType   @default(OTHER)
+  countryCode      String         @default("JP")
+  prefectureCode   String?
+  municipalityCode String?
+  address          String?
+  latitude         Float?
+  longitude        Float?
+  stationCode      String?
+  facilityCode     String?
+  status           LocationStatus @default(ACTIVE)
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  shootLocations ShootLocation[]
+  permissions    PermissionRecord[]
+}
+
+model ShootLocation {
+  id              String   @id @default(uuid())
+  shootId         String
+  locationId      String
+  displayOrder    Int      @default(0)
+  plannedCategory String?
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  shoot         Shoot         @relation(fields: [shootId], references: [id])
+  location      Location      @relation(fields: [locationId], references: [id])
+  uploadBatches UploadBatch[]
+
+  @@unique([shootId, locationId])
+}
+
+// ─────────────────────────────────────────────
+// Permissions
+// ─────────────────────────────────────────────
+
+model PermissionRecord {
+  id                     String           @id @default(uuid())
+  shootId                String
+  locationId             String?
+  permissionType         PermissionType   @default(FILMING)
+  status                 PermissionStatus @default(PENDING)
+  permissionGrantedDate  DateTime?
+  permittedShootDateFrom DateTime?
+  permittedShootDateTo   DateTime?
+  permittedTimeFrom      String?
+  permittedTimeTo        String?
+  authorityOrganization  String?
+  contactDepartment      String?
+  contactPerson          String?
+  contactPhone           String?
+  contactEmail           String?
+  permissionNumber       String?
+  permissionConditions   String?
+  permittedMedia         String[]
+  organicSocialAllowed   Boolean          @default(false)
+  paidAdvertisingAllowed Boolean          @default(false)
+  secondaryUseAllowed    Boolean          @default(false)
+  overseasUseAllowed     Boolean          @default(false)
+  validFrom              DateTime?
+  validUntil             DateTime?
+  renewalDueDate         DateTime?
+  documentObjectKey      String?
+  notes                  String?
+  createdBy              String?
+  updatedBy              String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  shoot    Shoot     @relation(fields: [shootId], references: [id])
+  location Location? @relation(fields: [locationId], references: [id])
+  creator  User?     @relation("PermissionCreator", fields: [createdBy], references: [id])
+  updater  User?     @relation("PermissionUpdater", fields: [updatedBy], references: [id])
+}
+
+// ─────────────────────────────────────────────
+// Upload
+// ─────────────────────────────────────────────
+
+model UploadBatch {
+  id                String      @id @default(uuid())
+  shootId           String
+  shootLocationId   String?
+  uploadedBy        String?
+  status            BatchStatus @default(UPLOADING)
+  totalFiles        Int         @default(0)
+  completedFiles    Int         @default(0)
+  failedFiles       Int         @default(0)
+  inheritedMetadata Json?
+  startedAt         DateTime    @default(now())
+  completedAt       DateTime?
+
+  shoot         Shoot          @relation(fields: [shootId], references: [id])
+  shootLocation ShootLocation? @relation(fields: [shootLocationId], references: [id])
+  uploader      User?          @relation(fields: [uploadedBy], references: [id])
+  assets        Asset[]
+}
+
+// ─────────────────────────────────────────────
+// Asset (central entity)
+// ─────────────────────────────────────────────
+
+model Asset {
+  id                 String           @id @default(uuid())
+  assetCode          String           @unique
+  uploadBatchId      String?
+  shootId            String?
+  projectId          String?
+  clientId           String?
+  assetType          AssetType        @default(VIDEO)
+  productionStatus   ProductionStatus @default(ORIGINAL)
+  title              String?
+  description        String?
+  sourceType         SourceType       @default(CAMERA)
+  visibility         Visibility       @default(INTERNAL)
+  reviewStatus       ReviewStatus     @default(PENDING)
+  rightsStatus       RightsStatus     @default(PENDING)
+  latestVersionId    String?
+  primarySeason      Season?
+  primaryTimeOfDay   TimeOfDay?
+  weather            Weather?
+  mixedSeasons       Season[]
+  mixedTimeOfDay     TimeOfDay[]
+  mixedLocations     Boolean          @default(false)
+  mixedFacilities    Boolean          @default(false)
+  peoplePresent      Boolean          @default(false)
+  recognizablePeople Boolean          @default(false)
+  notes              String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+
+  uploadBatch UploadBatch? @relation(fields: [uploadBatchId], references: [id])
+  shoot       Shoot?       @relation(fields: [shootId], references: [id])
+  project     Project?     @relation(fields: [projectId], references: [id])
+  client      Client?      @relation(fields: [clientId], references: [id])
+
+  files          AssetFile[]
+  tags           AssetTag[]
+  versions       AssetVersion[]
+  usagePolicies  AssetUsagePolicy[]
+  publications   AssetPublication[]
+  deliveryItems  DeliveryPackageAsset[]
+  downloadLogs   DownloadLog[]
+  processingJobs ProcessingJob[]
+  sceneSegments  SceneSegment[]
+
+  derivedFrom AssetLineage[] @relation("DerivedAsset")
+  usedIn      AssetLineage[] @relation("SourceAsset")
+}
+
+model AssetFile {
+  id               String          @id @default(uuid())
+  assetId          String
+  fileRole         FileRole        @default(ORIGINAL)
+  objectKey        String
+  originalFileName String?
+  mimeType         String?
+  sizeBytes        BigInt?
+  checksum         String?
+  width            Int?
+  height           Int?
+  durationSeconds  Float?
+  frameRate        Float?
+  orientation      String?
+  hasAudio         Boolean?
+  versionNumber    Int             @default(1)
+  isCurrent        Boolean         @default(true)
+  processingStatus ProcessingStatus @default(PENDING)
+  createdAt        DateTime        @default(now())
+
+  asset        Asset         @relation(fields: [assetId], references: [id])
+  downloadLogs DownloadLog[]
+}
+
+model AssetLineage {
+  id             String   @id @default(uuid())
+  derivedAssetId String
+  sourceAssetId  String
+  startTime      Float?
+  endTime        Float?
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  derivedAsset Asset @relation("DerivedAsset", fields: [derivedAssetId], references: [id])
+  sourceAsset  Asset @relation("SourceAsset", fields: [sourceAssetId], references: [id])
+
+  @@unique([derivedAssetId, sourceAssetId])
+}
+
+model AssetVersion {
+  id                String       @id @default(uuid())
+  assetId           String
+  versionNumber     Int
+  versionLabel      String?
+  changeDescription String?
+  approvalStatus    ReviewStatus @default(PENDING)
+  approvedBy        String?
+  approvedAt        DateTime?
+  createdAt         DateTime     @default(now())
+
+  asset    Asset @relation(fields: [assetId], references: [id])
+  approver User? @relation("VersionApprover", fields: [approvedBy], references: [id])
+
+  @@unique([assetId, versionNumber])
+}
+
+// ─────────────────────────────────────────────
+// Tags
+// ─────────────────────────────────────────────
+
+model MasterTag {
+  id        String   @id @default(uuid())
+  category  String
+  code      String   @unique
+  labelJa   String
+  labelZhCn String?
+  labelEn   String?
+  parentId  String?
+  status    String   @default("ACTIVE")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent    MasterTag?  @relation("TagHierarchy", fields: [parentId], references: [id])
+  children  MasterTag[] @relation("TagHierarchy")
+  aliases   TagAlias[]
+  assetTags AssetTag[]
+}
+
+model TagAlias {
+  id              String @id @default(uuid())
+  tagId           String
+  language        String
+  alias           String
+  normalizedAlias String
+
+  tag MasterTag @relation(fields: [tagId], references: [id])
+
+  @@unique([tagId, language, normalizedAlias])
+}
+
+model AssetTag {
+  id         String            @id @default(uuid())
+  assetId    String
+  tagId      String
+  source     TagSource         @default(MANUAL)
+  confidence Float?
+  status     TagApprovalStatus @default(SUGGESTED)
+  approvedBy String?
+  createdAt  DateTime          @default(now())
+
+  asset    Asset     @relation(fields: [assetId], references: [id])
+  tag      MasterTag @relation(fields: [tagId], references: [id])
+  approver User?     @relation("TagApprover", fields: [approvedBy], references: [id])
+
+  @@unique([assetId, tagId])
+}
+
+// ─────────────────────────────────────────────
+// Usage policy
+// ─────────────────────────────────────────────
+
+model UsagePolicy {
+  id                  String           @id @default(uuid())
+  name                String
+  internalUse         PolicyPermission @default(NOT_SET)
+  clientDelivery      PolicyPermission @default(NOT_SET)
+  homevistaWeb        PolicyPermission @default(NOT_SET)
+  clientWeb           PolicyPermission @default(NOT_SET)
+  propertyLandingPage PolicyPermission @default(NOT_SET)
+  organicInstagram    PolicyPermission @default(NOT_SET)
+  paidInstagram       PolicyPermission @default(NOT_SET)
+  organicFacebook     PolicyPermission @default(NOT_SET)
+  paidFacebook        PolicyPermission @default(NOT_SET)
+  youtube             PolicyPermission @default(NOT_SET)
+  tiktok              PolicyPermission @default(NOT_SET)
+  line                PolicyPermission @default(NOT_SET)
+  overseasUse         PolicyPermission @default(NOT_SET)
+  otherClientUse      PolicyPermission @default(NOT_SET)
+  resaleAllowed       Boolean          @default(false)
+  editingAllowed      Boolean          @default(true)
+  validFrom           DateTime?
+  validUntil          DateTime?
+  restrictions        String?
+  status              String           @default("ACTIVE")
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  assetPolicies   AssetUsagePolicy[]
+  defaultProjects Project[]          @relation("DefaultPolicy")
+}
+
+model AssetUsagePolicy {
+  id            String    @id @default(uuid())
+  assetId       String
+  usagePolicyId String
+  inheritedFrom String?
+  overriddenBy  String?
+  approvedBy    String?
+  approvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  asset    Asset       @relation(fields: [assetId], references: [id])
+  policy   UsagePolicy @relation(fields: [usagePolicyId], references: [id])
+  approver User?       @relation("PolicyApprover", fields: [approvedBy], references: [id])
+}
+
+// ─────────────────────────────────────────────
+// Publication & Delivery
+// ─────────────────────────────────────────────
+
+model Site {
+  id               String     @id @default(uuid())
+  name             String
+  code             String     @unique
+  domain           String?
+  type             SiteType   @default(OTHER)
+  status           SiteStatus @default(ACTIVE)
+  defaultLanguage  String     @default("ja")
+  countryCode      String?
+  prefectureCode   String?
+  municipalityCode String?
+  description      String?
+  apiKeyHash       String?
+  allowedOrigins   String[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  publications AssetPublication[]
+}
+
+model AssetPublication {
+  id                String            @id @default(uuid())
+  assetId           String
+  siteId            String?
+  projectId         String?
+  channelType       ChannelType
+  externalReference String?
+  pageUrl           String?
+  publicationStatus PublicationStatus @default(DRAFT)
+  publishFrom       DateTime?
+  publishUntil      DateTime?
+  publishedAt       DateTime?
+  unpublishedAt     DateTime?
+  lastSyncAt        DateTime?
+  errorMessage      String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  asset   Asset    @relation(fields: [assetId], references: [id])
+  site    Site?    @relation(fields: [siteId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id])
+}
+
+model DeliveryPackage {
+  id          String         @id @default(uuid())
+  clientId    String?
+  projectId   String?
+  title       String
+  status      DeliveryStatus @default(DRAFT)
+  deliveredAt DateTime?
+  expiresAt   DateTime?
+  createdBy   String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  client  Client?   @relation(fields: [clientId], references: [id])
+  project Project?  @relation(fields: [projectId], references: [id])
+  creator User?     @relation(fields: [createdBy], references: [id])
+  items   DeliveryPackageAsset[]
+}
+
+model DeliveryPackageAsset {
+  id                String    @id @default(uuid())
+  deliveryPackageId String
+  assetId           String
+  allowPreview      Boolean   @default(true)
+  allowDownload     Boolean   @default(false)
+  downloadVariant   FileRole?
+  displayOrder      Int       @default(0)
+
+  package DeliveryPackage @relation(fields: [deliveryPackageId], references: [id])
+  asset   Asset           @relation(fields: [assetId], references: [id])
+
+  @@unique([deliveryPackageId, assetId])
+}
+
+// ─────────────────────────────────────────────
+// Logs & Jobs
+// ─────────────────────────────────────────────
+
+model DownloadLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  orgId        String?
+  assetId      String
+  assetFileId  String?
+  downloadedAt DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+
+  user      User?      @relation(fields: [userId], references: [id])
+  asset     Asset      @relation(fields: [assetId], references: [id])
+  assetFile AssetFile? @relation(fields: [assetFileId], references: [id])
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  userId         String?
+  organizationId String?
+  entityType     String
+  entityId       String
+  action         String
+  beforeData     Json?
+  afterData      Json?
+  ipAddress      String?
+  createdAt      DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+model ProcessingJob {
+  id           String    @id @default(uuid())
+  assetId      String
+  jobType      JobType
+  status       JobStatus @default(PENDING)
+  progress     Int       @default(0)
+  retryCount   Int       @default(0)
+  errorMessage String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id])
+}
+
+// Schema only — detailed implementation in Phase 3
+model SceneSegment {
+  id               String     @id @default(uuid())
+  assetId          String
+  startTime        Float
+  endTime          Float
+  primarySeason    Season?
+  primaryTimeOfDay TimeOfDay?
+  locationId       String?
+  tags             String[]
+  status           String     @default("PENDING")
+  createdAt        DateTime   @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id])
+}

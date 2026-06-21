@@ -1,0 +1,158 @@
+export type Lang = "ja" | "zh";
+
+export const t = {
+  ja: {
+    // Nav
+    dashboard: "ダッシュボード",
+    projects: "プロジェクト",
+    shoots: "撮影案件",
+    assetLibrary: "素材ライブラリ",
+    review: "確認・承認",
+    delivery: "納品管理",
+    publications: "掲載先管理",
+    management: "管理",
+    users: "ユーザー管理",
+    tags: "タグ管理",
+    permissions: "許可情報",
+    audit: "操作履歴",
+    settings: "設定",
+
+    // Projects
+    newProject: "新規プロジェクト",
+    projectName: "プロジェクト名",
+    propertyName: "物件名",
+    propertyType: "物件種別",
+    prefecture: "都道府県",
+    municipality: "市区町村",
+    address: "住所",
+    defaultVisibility: "デフォルト公開範囲",
+    internal: "社内のみ",
+    clientOnly: "クライアントまで",
+    public: "公開",
+    cancel: "キャンセル",
+    create: "作成",
+    creating: "作成中...",
+    noProjects: "プロジェクトがありません",
+    createFirst: "最初のプロジェクトを作成",
+    active: "進行中",
+    select: "選択してください",
+    selectPref: "選択",
+
+    // Shoots
+    newShoot: "新規撮影案件",
+    shootName: "撮影案件名",
+    shootDate: "撮影日",
+    notes: "メモ",
+    noShoots: "撮影案件がありません",
+    selectProject: "プロジェクトを選択してください",
+    planned: "予定",
+    inProgress: "撮影中",
+    completed: "完了",
+    cancelled: "キャンセル",
+
+    // Property types
+    condo: "マンション",
+    house: "戸建て",
+    office: "オフィス",
+    commercial: "商業施設",
+    resort: "リゾート",
+
+    // Dashboard
+    dashboardTitle: "ダッシュボード",
+    pendingReview: "確認待ち",
+    processingError: "処理エラー",
+    todayUploads: "今日のアップロード",
+    pendingDelivery: "納品待ち",
+    permitExpiryAlert: "許可期限アラート",
+    expired: "期限切れ",
+    expiringIn7: "7日以内に期限切れ",
+    expiringIn14: "14日以内に期限切れ",
+    expiringIn30: "30日以内に期限切れ",
+    recentActivity: "最近の操作",
+    noActivity: "操作履歴なし",
+    system: "システム",
+    items: "件",
+
+    // Common
+    errorOccurred: "エラーが発生しました",
+    clientUnset: "クライアント未設定",
+  },
+  zh: {
+    // Nav
+    dashboard: "仪表板",
+    projects: "项目",
+    shoots: "拍摄案件",
+    assetLibrary: "素材库",
+    review: "审核·批准",
+    delivery: "交付管理",
+    publications: "发布管理",
+    management: "管理",
+    users: "用户管理",
+    tags: "标签管理",
+    permissions: "授权信息",
+    audit: "操作记录",
+    settings: "设置",
+
+    // Projects
+    newProject: "新建项目",
+    projectName: "项目名称",
+    propertyName: "物业名称",
+    propertyType: "物业类型",
+    prefecture: "都道府县",
+    municipality: "市区町村",
+    address: "地址",
+    defaultVisibility: "默认可见范围",
+    internal: "仅内部",
+    clientOnly: "含客户",
+    public: "公开",
+    cancel: "取消",
+    create: "创建",
+    creating: "创建中...",
+    noProjects: "暂无项目",
+    createFirst: "创建第一个项目",
+    active: "进行中",
+    select: "请选择",
+    selectPref: "选择",
+
+    // Shoots
+    newShoot: "新建拍摄案件",
+    shootName: "拍摄案件名称",
+    shootDate: "拍摄日期",
+    notes: "备注",
+    noShoots: "暂无拍摄案件",
+    selectProject: "请选择项目",
+    planned: "计划中",
+    inProgress: "拍摄中",
+    completed: "已完成",
+    cancelled: "已取消",
+
+    // Property types
+    condo: "公寓",
+    house: "独栋住宅",
+    office: "办公室",
+    commercial: "商业设施",
+    resort: "度假村",
+
+    // Dashboard
+    dashboardTitle: "仪表板",
+    pendingReview: "待审核",
+    processingError: "处理错误",
+    todayUploads: "今日上传",
+    pendingDelivery: "待交付",
+    permitExpiryAlert: "许可证到期提醒",
+    expired: "已过期",
+    expiringIn7: "7天内到期",
+    expiringIn14: "14天内到期",
+    expiringIn30: "30天内到期",
+    recentActivity: "最近操作",
+    noActivity: "暂无操作记录",
+    system: "系统",
+    items: "件",
+
+    // Common
+    errorOccurred: "发生错误",
+    clientUnset: "未设置客户",
+  },
+} as const;
+
+export type TranslationKey = keyof typeof t.ja;
