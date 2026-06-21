@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   if (error || !data.user) {
     return NextResponse.json(
-      { error: "メールアドレスまたはパスワードが正しくありません" },
+      { error: "メールアドレスまたはパスワードが正しくありません", debug: error?.message, url: process.env.NEXT_PUBLIC_SUPABASE_URL },
       { status: 401 }
     );
   }
