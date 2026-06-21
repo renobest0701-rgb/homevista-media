@@ -42,13 +42,13 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-60 flex-shrink-0 bg-zinc-950 border-r border-zinc-800 flex flex-col h-screen sticky top-0">
+    <aside className="w-60 flex-shrink-0 bg-gray-50 border-r border-gray-200 flex flex-col h-screen sticky top-0">
       {/* Logo */}
-      <div className="px-6 py-5 border-b border-zinc-800">
-        <span className="text-white font-bold tracking-tight text-sm">
+      <div className="px-6 py-5 border-b border-gray-200">
+        <span className="text-gray-900 font-bold tracking-tight text-sm">
           HOMEVISTA
         </span>
-        <span className="block text-zinc-500 text-xs mt-0.5">
+        <span className="block text-gray-400 text-xs mt-0.5">
           Media Asset Platform
         </span>
       </div>
@@ -62,8 +62,8 @@ export function Sidebar() {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
               pathname === href || pathname.startsWith(href + "/")
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-800/60"
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/60"
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -72,7 +72,7 @@ export function Sidebar() {
         ))}
 
         <div className="pt-4 pb-1">
-          <p className="px-3 text-xs text-zinc-600 font-medium uppercase tracking-wider">
+          <p className="px-3 text-xs text-gray-300 font-medium uppercase tracking-wider">
             {tr.management}
           </p>
         </div>
@@ -84,8 +84,8 @@ export function Sidebar() {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
               pathname === href || pathname.startsWith(href + "/")
-                ? "bg-zinc-800 text-white"
-                : "text-zinc-400 hover:text-white hover:bg-zinc-800/60"
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/60"
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -95,16 +95,16 @@ export function Sidebar() {
       </nav>
 
       {/* Language toggle + version */}
-      <div className="px-4 py-4 border-t border-zinc-800 flex items-center justify-between">
-        <p className="text-xs text-zinc-500">v1.1.0</p>
+      <div className="px-4 py-4 border-t border-gray-200 flex items-center justify-between">
+        <p className="text-xs text-gray-400">v1.1.0</p>
         <div className="flex gap-1">
           <button
             onClick={() => setLang("ja")}
             className={cn(
               "px-2 py-1 text-xs rounded font-medium transition-colors",
               lang === "ja"
-                ? "bg-zinc-700 text-white"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-gray-200 text-gray-900"
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             日本語
@@ -114,8 +114,8 @@ export function Sidebar() {
             className={cn(
               "px-2 py-1 text-xs rounded font-medium transition-colors",
               lang === "zh"
-                ? "bg-zinc-700 text-white"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-gray-200 text-gray-900"
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             中文

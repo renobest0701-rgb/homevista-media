@@ -254,23 +254,23 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
   const totalSize = files.reduce((s, f) => s + f.file.size, 0);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <div className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="font-bold text-sm tracking-tight">HOMEVISTA Upload</h1>
         </div>
         {/* Lang toggle */}
-        <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setLang("ja")}
-            className={cn("px-3 py-1 text-xs rounded-md transition-colors", lang === "ja" ? "bg-zinc-700 text-white" : "text-zinc-400")}
+            className={cn("px-3 py-1 text-xs rounded-md transition-colors", lang === "ja" ? "bg-gray-200 text-gray-900" : "text-gray-500")}
           >
             日本語
           </button>
           <button
             onClick={() => setLang("zh")}
-            className={cn("px-3 py-1 text-xs rounded-md transition-colors", lang === "zh" ? "bg-zinc-700 text-white" : "text-zinc-400")}
+            className={cn("px-3 py-1 text-xs rounded-md transition-colors", lang === "zh" ? "bg-gray-200 text-gray-900" : "text-gray-500")}
           >
             中文
           </button>
@@ -278,17 +278,17 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
       </div>
 
       {/* Step indicator */}
-      <div className="flex border-b border-zinc-800">
+      <div className="flex border-b border-gray-200">
         {([1, 2, 3, 4] as Step[]).map((s) => (
           <div
             key={s}
             className={cn(
               "flex-1 text-center py-3 text-xs transition-colors",
               step === s
-                ? "text-white border-b-2 border-white"
+                ? "text-gray-900 border-b-2 border-white"
                 : step > s
                 ? "text-green-400"
-                : "text-zinc-600"
+                : "text-gray-300"
             )}
           >
             {s === 1 ? t.step1 : s === 2 ? t.step2 : s === 3 ? t.step3 : t.step4}
@@ -306,7 +306,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
             {shoot.teamOrg && <InfoRow label={t.team} value={shoot.teamOrg.name} />}
             <button
               onClick={() => setStep(2)}
-              className="w-full bg-white text-black font-medium py-3 rounded-xl text-sm mt-6"
+              className="w-full bg-gray-900 text-gray-900 font-medium py-3 rounded-xl text-sm mt-6"
             >
               {t.next}
             </button>
@@ -318,10 +318,10 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm text-zinc-400">{t.location}</label>
+                <label className="text-sm text-gray-500">{t.location}</label>
                 <button
                   onClick={() => setShowNewLocation(!showNewLocation)}
-                  className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white"
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900"
                 >
                   <Plus className="h-3 w-3" />
                   {lang === "zh" ? "新增地点" : "新しい場所を追加"}
@@ -331,7 +331,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
               {locations.length > 0 ? (
                 <div className="space-y-2">
                   {locations.map((sl) => (
-                    <label key={sl.id} className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-700 rounded-xl cursor-pointer has-[:checked]:border-white">
+                    <label key={sl.id} className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-xl cursor-pointer has-[:checked]:border-white">
                       <input
                         type="radio"
                         name="location"
@@ -340,28 +340,28 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                         onChange={(e) => setSelectedLocationId(e.target.value)}
                         className="accent-white"
                       />
-                      <MapPin className="h-3.5 w-3.5 text-zinc-500" />
+                      <MapPin className="h-3.5 w-3.5 text-gray-400" />
                       <span className="text-sm">{sl.location.name}</span>
                     </label>
                   ))}
                 </div>
               ) : (
-                <p className="text-zinc-500 text-sm py-2">{lang === "zh" ? "尚无拍摄地点" : "撮影場所が未登録です"}</p>
+                <p className="text-gray-400 text-sm py-2">{lang === "zh" ? "尚无拍摄地点" : "撮影場所が未登録です"}</p>
               )}
 
               {showNewLocation && (
-                <div className="mt-3 p-4 bg-zinc-900 border border-zinc-700 rounded-xl space-y-3">
-                  <p className="text-xs text-zinc-400">{lang === "zh" ? "新建拍摄地点" : "新しい撮影場所を作成"}</p>
+                <div className="mt-3 p-4 bg-white border border-gray-300 rounded-xl space-y-3">
+                  <p className="text-xs text-gray-500">{lang === "zh" ? "新建拍摄地点" : "新しい撮影場所を作成"}</p>
                   <input
                     value={newLocationName}
                     onChange={(e) => setNewLocationName(e.target.value)}
                     placeholder={lang === "zh" ? "地点名称" : "場所名"}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none"
                   />
                   <select
                     value={newLocationType}
                     onChange={(e) => setNewLocationType(e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none"
                   >
                     <option value="BUILDING">{lang === "zh" ? "建筑" : "建物"}</option>
                     <option value="OUTDOOR">{lang === "zh" ? "户外" : "屋外"}</option>
@@ -372,13 +372,13 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                     <option value="OTHER">{lang === "zh" ? "其他" : "その他"}</option>
                   </select>
                   <div className="flex gap-2">
-                    <button onClick={() => setShowNewLocation(false)} className="flex-1 py-2 text-xs text-zinc-400 border border-zinc-700 rounded-lg">
+                    <button onClick={() => setShowNewLocation(false)} className="flex-1 py-2 text-xs text-gray-500 border border-gray-300 rounded-lg">
                       {lang === "zh" ? "取消" : "キャンセル"}
                     </button>
                     <button
                       onClick={addNewLocation}
                       disabled={!newLocationName.trim() || addingLocation}
-                      className="flex-1 py-2 text-xs bg-white text-black font-medium rounded-lg disabled:opacity-40"
+                      className="flex-1 py-2 text-xs bg-gray-900 text-gray-900 font-medium rounded-lg disabled:opacity-40"
                     >
                       {addingLocation ? "..." : (lang === "zh" ? "创建并选择" : "作成して選択")}
                     </button>
@@ -387,11 +387,11 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
               )}
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-2">{t.category}</label>
+              <label className="block text-sm text-gray-500 mb-2">{t.category}</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-xl px-3 py-3 text-sm focus:outline-none"
+                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-3 text-sm focus:outline-none"
               >
                 <option value="">選択してください</option>
                 <option value="cat-exterior">物件外観 / 物业外观</option>
@@ -403,8 +403,8 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
               </select>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(1)} className="flex-1 py-3 text-sm text-zinc-400 border border-zinc-700 rounded-xl">{t.back}</button>
-              <button onClick={() => setStep(3)} className="flex-1 py-3 text-sm bg-white text-black font-medium rounded-xl">{t.next}</button>
+              <button onClick={() => setStep(1)} className="flex-1 py-3 text-sm text-gray-500 border border-gray-300 rounded-xl">{t.back}</button>
+              <button onClick={() => setStep(3)} className="flex-1 py-3 text-sm bg-gray-900 text-gray-900 font-medium rounded-xl">{t.next}</button>
             </div>
           </div>
         )}
@@ -413,36 +413,36 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
         {step === 3 && (
           <div className="space-y-5">
             <div>
-              <p className="text-sm text-zinc-400 mb-3">{t.peoplePresent}</p>
+              <p className="text-sm text-gray-500 mb-3">{t.peoplePresent}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setPeoplePresent(true)}
                   className={cn("flex-1 py-3 text-sm rounded-xl border transition-colors",
-                    peoplePresent ? "bg-white text-black border-white" : "border-zinc-700 text-zinc-300")}
+                    peoplePresent ? "bg-gray-900 text-gray-900 border-white" : "border-gray-300 text-gray-600")}
                 >
                   {t.yes}
                 </button>
                 <button
                   onClick={() => setPeoplePresent(false)}
                   className={cn("flex-1 py-3 text-sm rounded-xl border transition-colors",
-                    !peoplePresent ? "bg-white text-black border-white" : "border-zinc-700 text-zinc-300")}
+                    !peoplePresent ? "bg-gray-900 text-gray-900 border-white" : "border-gray-300 text-gray-600")}
                 >
                   {t.no}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-2">補足メモ / 备注</label>
+              <label className="block text-sm text-gray-500 mb-2">補足メモ / 备注</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="w-full bg-zinc-900 border border-zinc-700 text-white rounded-xl px-3 py-3 text-sm resize-none focus:outline-none"
+                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-3 text-sm resize-none focus:outline-none"
               />
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(2)} className="flex-1 py-3 text-sm text-zinc-400 border border-zinc-700 rounded-xl">{t.back}</button>
-              <button onClick={() => setStep(4)} className="flex-1 py-3 text-sm bg-white text-black font-medium rounded-xl">{t.next}</button>
+              <button onClick={() => setStep(2)} className="flex-1 py-3 text-sm text-gray-500 border border-gray-300 rounded-xl">{t.back}</button>
+              <button onClick={() => setStep(4)} className="flex-1 py-3 text-sm bg-gray-900 text-gray-900 font-medium rounded-xl">{t.next}</button>
             </div>
           </div>
         )}
@@ -453,8 +453,8 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
             {allDone ? (
               <div className="text-center py-12">
                 <CheckCircle className="h-12 w-12 text-green-400 mx-auto mb-4" />
-                <h2 className="text-white font-semibold text-lg">{t.uploadDone}</h2>
-                <p className="text-zinc-500 text-sm mt-2">{t.uploadDoneDesc}</p>
+                <h2 className="text-gray-900 font-semibold text-lg">{t.uploadDone}</h2>
+                <p className="text-gray-400 text-sm mt-2">{t.uploadDoneDesc}</p>
               </div>
             ) : (
               <>
@@ -463,10 +463,10 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onClick={() => inputRef.current?.click()}
-                  className="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center cursor-pointer hover:border-zinc-500 transition-colors mb-4"
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-zinc-500 transition-colors mb-4"
                 >
-                  <Upload className="h-8 w-8 text-zinc-600 mx-auto mb-3" />
-                  <p className="text-sm text-zinc-400">{t.dropZone}</p>
+                  <Upload className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">{t.dropZone}</p>
                   <input
                     ref={inputRef}
                     type="file"
@@ -481,23 +481,23 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                 {files.length > 0 && (
                   <div className="space-y-2 mb-4">
                     {files.map((f) => (
-                      <div key={f.id} className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5">
+                      <div key={f.id} className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-3 py-2.5">
                         {f.file.type.startsWith("video/") ? (
-                          <FileVideo className="h-4 w-4 text-zinc-500 shrink-0" />
+                          <FileVideo className="h-4 w-4 text-gray-400 shrink-0" />
                         ) : (
-                          <FileImage className="h-4 w-4 text-zinc-500 shrink-0" />
+                          <FileImage className="h-4 w-4 text-gray-400 shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white truncate">{f.file.name}</p>
-                          <p className="text-xs text-zinc-500">{formatBytes(f.file.size)}</p>
+                          <p className="text-sm text-gray-900 truncate">{f.file.name}</p>
+                          <p className="text-xs text-gray-400">{formatBytes(f.file.size)}</p>
                           {f.status === "uploading" && (
-                            <div className="mt-1 h-1 bg-zinc-700 rounded-full overflow-hidden">
+                            <div className="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden">
                               <div className="h-full bg-blue-500 rounded-full w-1/2 animate-pulse" />
                             </div>
                           )}
                         </div>
                         {f.status === "pending" && (
-                          <button onClick={() => removeFile(f.id)} className="text-zinc-600 hover:text-zinc-300">
+                          <button onClick={() => removeFile(f.id)} className="text-gray-300 hover:text-gray-600">
                             <X className="h-3.5 w-3.5" />
                           </button>
                         )}
@@ -506,7 +506,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                         {f.status === "error" && <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
                       </div>
                     ))}
-                    <p className="text-xs text-zinc-500 px-1">
+                    <p className="text-xs text-gray-400 px-1">
                       {t.total}: {files.length} ファイル / {formatBytes(totalSize)}
                     </p>
                   </div>
@@ -515,7 +515,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                 <button
                   onClick={startUpload}
                   disabled={files.length === 0 || files.some((f) => f.status === "uploading")}
-                  className="w-full bg-white text-black font-medium py-3 rounded-xl text-sm disabled:opacity-40"
+                  className="w-full bg-gray-900 text-gray-900 font-medium py-3 rounded-xl text-sm disabled:opacity-40"
                 >
                   {files.some((f) => f.status === "uploading") ? t.uploading : t.startUpload}
                 </button>
@@ -530,9 +530,9 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-2.5 border-b border-zinc-800">
-      <span className="text-sm text-zinc-500">{label}</span>
-      <span className="text-sm text-white font-medium">{value}</span>
+    <div className="flex justify-between items-center py-2.5 border-b border-gray-200">
+      <span className="text-sm text-gray-400">{label}</span>
+      <span className="text-sm text-gray-900 font-medium">{value}</span>
     </div>
   );
 }

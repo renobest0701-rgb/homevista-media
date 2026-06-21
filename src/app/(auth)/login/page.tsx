@@ -48,14 +48,14 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">
+        <label className="block text-sm text-gray-500 mb-1.5">
           メールアドレス
         </label>
         <input
           {...register("email")}
           type="email"
           autoComplete="email"
-          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           placeholder="admin@homevista.jp"
         />
         {errors.email && (
@@ -64,14 +64,14 @@ function LoginForm() {
       </div>
 
       <div>
-        <label className="block text-sm text-zinc-400 mb-1.5">
+        <label className="block text-sm text-gray-500 mb-1.5">
           パスワード
         </label>
         <input
           {...register("password")}
           type="password"
           autoComplete="current-password"
-          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+          className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
         />
         {errors.password && (
           <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
@@ -87,7 +87,7 @@ function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-white text-black font-medium py-2.5 rounded-lg text-sm hover:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-gray-900 text-white font-medium py-2.5 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? "ログイン中..." : "ログイン"}
       </button>
@@ -97,11 +97,11 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-white font-bold text-2xl tracking-tight">HOMEVISTA</h1>
-          <p className="text-zinc-500 text-sm mt-1">Media Asset Platform</p>
+          <h1 className="text-gray-900 font-bold text-2xl tracking-tight">HOMEVISTA</h1>
+          <p className="text-gray-400 text-sm mt-1">Media Asset Platform</p>
         </div>
         <Suspense fallback={null}>
           <LoginForm />

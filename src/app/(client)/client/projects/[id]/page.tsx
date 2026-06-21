@@ -56,22 +56,22 @@ export default function ClientProjectAssetsPage() {
     <div className="max-w-7xl mx-auto px-8 py-10">
       <Link
         href="/client/dashboard"
-        className="inline-flex items-center gap-2 text-zinc-500 hover:text-white text-sm mb-6 transition-colors"
+        className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-900 text-sm mb-6 transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         プロジェクト一覧へ
       </Link>
 
-      <h1 className="text-xl font-bold text-white mb-6">素材一覧</h1>
+      <h1 className="text-xl font-bold text-gray-900 mb-6">素材一覧</h1>
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-video bg-zinc-900 rounded-xl animate-pulse" />
+            <div key={i} className="aspect-video bg-white rounded-xl animate-pulse" />
           ))}
         </div>
       ) : assets.length === 0 ? (
-        <p className="text-zinc-500 text-sm">公開中の素材はありません</p>
+        <p className="text-gray-400 text-sm">公開中の素材はありません</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {assets.map((asset) => {
@@ -85,10 +85,10 @@ export default function ClientProjectAssetsPage() {
             return (
               <div
                 key={asset.id}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden group"
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden group"
               >
                 {/* Thumbnail */}
-                <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                <div className="aspect-video bg-gray-100 relative overflow-hidden">
                   {thumbnail ? (
                     <img
                       src={thumbnail.url}
@@ -99,15 +99,15 @@ export default function ClientProjectAssetsPage() {
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       {isVideo ? (
-                        <Video className="h-8 w-8 text-zinc-700" />
+                        <Video className="h-8 w-8 text-gray-200" />
                       ) : (
-                        <Image className="h-8 w-8 text-zinc-700" />
+                        <Image className="h-8 w-8 text-gray-200" />
                       )}
                     </div>
                   )}
                   {isVideo && duration && (
                     <div className="absolute bottom-2 left-2">
-                      <span className="bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-mono">
+                      <span className="bg-gray-900/60 text-gray-900 text-xs px-1.5 py-0.5 rounded font-mono">
                         {formatDuration(duration)}
                       </span>
                     </div>
@@ -116,14 +116,14 @@ export default function ClientProjectAssetsPage() {
 
                 {/* Info */}
                 <div className="p-3">
-                  <p className="text-white text-sm font-medium truncate">
+                  <p className="text-gray-900 text-sm font-medium truncate">
                     {asset.title ?? asset.assetCode}
                   </p>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {asset.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag.code}
-                        className="text-xs bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded"
+                        className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded"
                       >
                         {tag.labelJa}
                       </span>
@@ -133,7 +133,7 @@ export default function ClientProjectAssetsPage() {
                   {asset.canDownload && (
                     <button
                       onClick={() => handleDownload(asset.id)}
-                      className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg transition-colors"
+                      className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg transition-colors"
                     >
                       <Download className="h-3 w-3" />
                       ダウンロード

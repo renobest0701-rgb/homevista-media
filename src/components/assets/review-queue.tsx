@@ -95,11 +95,11 @@ export function ReviewQueue({ assets }: { assets: Asset[] }) {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-lg font-semibold text-white">確認・承認キュー</h1>
+        <h1 className="text-lg font-semibold text-gray-900">確認・承認キュー</h1>
         {selected.size > 0 && (
           <button
             onClick={handleBulkApprove}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-gray-900 text-sm px-4 py-2 rounded-lg transition-colors"
           >
             <CheckSquare className="h-4 w-4" />
             選択した {selected.size} 件を一括承認
@@ -148,27 +148,27 @@ export function ReviewQueue({ assets }: { assets: Asset[] }) {
 
       {/* Reject modal */}
       {rejectTarget && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-white font-medium mb-4">却下理由を入力</h2>
+        <div className="fixed inset-0 bg-gray-900/60 flex items-center justify-center z-50">
+          <div className="bg-white border border-gray-300 rounded-xl p-6 w-full max-w-md">
+            <h2 className="text-gray-900 font-medium mb-4">却下理由を入力</h2>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               rows={4}
               placeholder="却下の理由を詳しく記入してください..."
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none resize-none mb-4"
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none resize-none mb-4"
             />
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => { setRejectTarget(null); setRejectReason(""); }}
-                className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
               >
                 キャンセル
               </button>
               <button
                 onClick={() => rejectMutation.mutate({ id: rejectTarget, reason: rejectReason })}
                 disabled={!rejectReason.trim() || rejectMutation.isPending}
-                className="px-4 py-2 text-sm bg-red-700 hover:bg-red-600 text-white rounded-lg disabled:opacity-40 transition-colors"
+                className="px-4 py-2 text-sm bg-red-700 hover:bg-red-600 text-gray-900 rounded-lg disabled:opacity-40 transition-colors"
               >
                 却下する
               </button>
@@ -212,7 +212,7 @@ function Section({
         {assets.map((asset) => (
           <div
             key={asset.id}
-            className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 hover:border-zinc-700 transition-colors"
+            className="flex items-center gap-4 bg-white border border-gray-200 rounded-lg px-4 py-3 hover:border-gray-300 transition-colors"
           >
             {color === "green" && (
               <input
@@ -224,17 +224,17 @@ function Section({
             )}
 
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">
+              <p className="text-gray-900 text-sm font-medium truncate">
                 {asset.title ?? asset.assetCode}
               </p>
               <div className="flex items-center gap-3 mt-0.5">
-                <span className="text-xs text-zinc-500">{asset.assetCode}</span>
-                <span className="text-xs text-zinc-600">·</span>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-gray-400">{asset.assetCode}</span>
+                <span className="text-xs text-gray-300">·</span>
+                <span className="text-xs text-gray-400">
                   {asset.shoot?.project?.name ?? "—"}
                 </span>
-                <span className="text-xs text-zinc-600">·</span>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-gray-300">·</span>
+                <span className="text-xs text-gray-400">
                   {formatDate(asset.shoot?.shootDate as string | null)}
                 </span>
                 {asset.peoplePresent && (
@@ -257,7 +257,7 @@ function Section({
               </button>
               <button
                 onClick={() => onReject(asset.id)}
-                className="px-3 py-1.5 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors"
               >
                 却下
               </button>

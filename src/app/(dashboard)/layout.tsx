@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <LangProvider>
-      <div className="flex h-screen overflow-hidden bg-zinc-900">
+      <div className="flex h-screen overflow-hidden bg-white">
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
           {children}

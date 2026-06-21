@@ -56,20 +56,20 @@ export default function ShootDetailPage() {
   if (!shoot) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="h-8 w-8 rounded-full border-2 border-zinc-600 border-t-white animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-gray-400 border-t-white animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-8 py-5 border-b border-zinc-800 flex items-center gap-4">
-        <Link href="/shoots" className="text-zinc-500 hover:text-white">
+      <div className="px-8 py-5 border-b border-gray-200 flex items-center gap-4">
+        <Link href="/shoots" className="text-gray-400 hover:text-gray-900">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-lg font-semibold text-white">{String(shoot.name ?? "")}</h1>
-          <p className="text-zinc-500 text-xs mt-0.5">
+          <h1 className="text-lg font-semibold text-gray-900">{String(shoot.name ?? "")}</h1>
+          <p className="text-gray-400 text-xs mt-0.5">
             {String((shoot.project as Record<string, unknown>)?.name ?? "")} · {formatDate(shoot.shootDate as string)}
           </p>
         </div>
@@ -80,23 +80,23 @@ export default function ShootDetailPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-zinc-400" />
-              <h2 className="text-white font-medium">撮影場所</h2>
-              <span className="text-zinc-600 text-sm">（{shootLocations.length}件）</span>
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <h2 className="text-gray-900 font-medium">撮影場所</h2>
+              <span className="text-gray-300 text-sm">（{shootLocations.length}件）</span>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setShowCreateLocation(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-300 border border-zinc-700 rounded-lg hover:bg-zinc-800">
+              <button onClick={() => setShowCreateLocation(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">
                 <Plus className="h-3 w-3" /> 新しい場所を作成
               </button>
-              <button onClick={() => setShowAddLocation(!showAddLocation)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white text-black font-medium rounded-lg hover:bg-zinc-100">
+              <button onClick={() => setShowAddLocation(!showAddLocation)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-50">
                 <Plus className="h-3 w-3" /> 既存の場所を追加
               </button>
             </div>
           </div>
 
           {showAddLocation && (
-            <div className="mb-4 bg-zinc-900 border border-zinc-700 rounded-xl p-4">
-              <p className="text-zinc-400 text-xs mb-3">場所を選択してください</p>
+            <div className="mb-4 bg-white border border-gray-300 rounded-xl p-4">
+              <p className="text-gray-500 text-xs mb-3">場所を選択してください</p>
               <div className="space-y-1 max-h-48 overflow-y-auto">
                 {allLocations
                   .filter((l: Record<string, unknown>) => !existingLocationIds.has(String(l.id)))
@@ -104,35 +104,35 @@ export default function ShootDetailPage() {
                     <button
                       key={String(loc.id)}
                       onClick={() => addExistingLocation(String(loc.id))}
-                      className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-800 rounded-lg"
+                      className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
                     >
                       {String(loc.name)}
-                      {loc.address != null && <span className="text-zinc-500 ml-2 text-xs">{String(loc.address)}</span>}
+                      {loc.address != null && <span className="text-gray-400 ml-2 text-xs">{String(loc.address)}</span>}
                     </button>
                   ))}
                 {allLocations.filter((l: Record<string, unknown>) => !existingLocationIds.has(String(l.id))).length === 0 && (
-                  <p className="text-zinc-500 text-sm px-3">追加できる場所がありません</p>
+                  <p className="text-gray-400 text-sm px-3">追加できる場所がありません</p>
                 )}
               </div>
             </div>
           )}
 
           {shootLocations.length === 0 ? (
-            <div className="bg-zinc-900 border border-dashed border-zinc-700 rounded-xl p-8 text-center">
-              <MapPin className="h-8 w-8 text-zinc-700 mx-auto mb-2" />
-              <p className="text-zinc-500 text-sm">撮影場所が登録されていません</p>
+            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-8 text-center">
+              <MapPin className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+              <p className="text-gray-400 text-sm">撮影場所が登録されていません</p>
             </div>
           ) : (
             <div className="space-y-2">
               {shootLocations.map((sl: Record<string, unknown>) => {
                 const loc = sl.location as Record<string, unknown>;
                 return (
-                  <div key={String(sl.id)} className="flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+                  <div key={String(sl.id)} className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl">
                     <div>
-                      <p className="text-white text-sm font-medium">{String(loc?.name ?? "")}</p>
-                      {loc?.address != null && <p className="text-zinc-500 text-xs mt-0.5">{String(loc.address)}</p>}
+                      <p className="text-gray-900 text-sm font-medium">{String(loc?.name ?? "")}</p>
+                      {loc?.address != null && <p className="text-gray-400 text-xs mt-0.5">{String(loc.address)}</p>}
                     </div>
-                    <span className="text-zinc-600 text-xs">{String(loc?.locationType ?? "OTHER")}</span>
+                    <span className="text-gray-300 text-xs">{String(loc?.locationType ?? "OTHER")}</span>
                   </div>
                 );
               })}
@@ -144,35 +144,35 @@ export default function ShootDetailPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-zinc-400" />
-              <h2 className="text-white font-medium">許可情報</h2>
-              <span className="text-zinc-600 text-sm">（{permits.length}件）</span>
+              <Shield className="h-4 w-4 text-gray-500" />
+              <h2 className="text-gray-900 font-medium">許可情報</h2>
+              <span className="text-gray-300 text-sm">（{permits.length}件）</span>
             </div>
-            <button onClick={() => setShowAddPermit(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white text-black font-medium rounded-lg hover:bg-zinc-100">
+            <button onClick={() => setShowAddPermit(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-50">
               <Plus className="h-3 w-3" /> 許可情報を追加
             </button>
           </div>
 
           {permits.length === 0 ? (
-            <div className="bg-zinc-900 border border-dashed border-zinc-700 rounded-xl p-8 text-center">
-              <Shield className="h-8 w-8 text-zinc-700 mx-auto mb-2" />
-              <p className="text-zinc-500 text-sm">許可情報が登録されていません</p>
+            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-8 text-center">
+              <Shield className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+              <p className="text-gray-400 text-sm">許可情報が登録されていません</p>
             </div>
           ) : (
             <div className="space-y-2">
               {permits.map((p: Record<string, unknown>) => (
-                <div key={String(p.id)} className="px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+                <div key={String(p.id)} className="px-4 py-3 bg-white border border-gray-200 rounded-xl">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-white text-sm font-medium">{String(p.permissionType ?? "FILMING")}</p>
+                    <p className="text-gray-900 text-sm font-medium">{String(p.permissionType ?? "FILMING")}</p>
                     <span className={`px-2 py-0.5 rounded-full text-xs ${
                       p.status === "APPROVED" ? "bg-green-900/40 text-green-400" :
                       p.status === "PENDING" ? "bg-yellow-900/40 text-yellow-400" :
-                      "bg-zinc-800 text-zinc-500"
+                      "bg-gray-100 text-gray-400"
                     }`}>{String(p.status)}</span>
                   </div>
-                  {p.authorityOrganization != null && <p className="text-zinc-400 text-xs">{String(p.authorityOrganization)}</p>}
+                  {p.authorityOrganization != null && <p className="text-gray-500 text-xs">{String(p.authorityOrganization)}</p>}
                   {p.validUntil != null && (
-                    <div className="flex items-center gap-1 mt-1 text-xs text-zinc-500">
+                    <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
                       <Calendar className="h-3 w-3" />
                       <span>期限: {formatDate(p.validUntil as string)}</span>
                     </div>

@@ -49,9 +49,9 @@ export function AssetCard({ asset }: { asset: Asset }) {
 
   return (
     <Link href={`/assets/${asset.id}`} className="group block">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-600 transition-colors">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-400 transition-colors">
         {/* Thumbnail */}
-        <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+        <div className="aspect-video bg-gray-100 relative overflow-hidden">
           {thumbnail ? (
             <img
               src={`/api/assets/${asset.id}/thumbnail`}
@@ -62,9 +62,9 @@ export function AssetCard({ asset }: { asset: Asset }) {
           ) : (
             <div className="flex items-center justify-center h-full">
               {isVideo ? (
-                <Video className="h-8 w-8 text-zinc-700" />
+                <Video className="h-8 w-8 text-gray-200" />
               ) : (
-                <Image className="h-8 w-8 text-zinc-700" />
+                <Image className="h-8 w-8 text-gray-200" />
               )}
             </div>
           )}
@@ -72,7 +72,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
           {/* Overlays */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-2">
             {isVideo && duration && (
-              <span className="bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-mono">
+              <span className="bg-gray-900/60 text-gray-900 text-xs px-1.5 py-0.5 rounded font-mono">
                 {formatDuration(duration)}
               </span>
             )}
@@ -84,25 +84,25 @@ export function AssetCard({ asset }: { asset: Asset }) {
           {/* Type badge */}
           <div className="absolute top-2 left-2">
             {isVideo ? (
-              <Video className="h-3 w-3 text-white drop-shadow" />
+              <Video className="h-3 w-3 text-gray-900 drop-shadow" />
             ) : (
-              <Image className="h-3 w-3 text-white drop-shadow" />
+              <Image className="h-3 w-3 text-gray-900 drop-shadow" />
             )}
           </div>
         </div>
 
         {/* Meta */}
         <div className="p-3">
-          <p className="text-white text-sm font-medium truncate leading-snug">
+          <p className="text-gray-900 text-sm font-medium truncate leading-snug">
             {asset.title ?? asset.assetCode}
           </p>
           {asset.project && (
-            <p className="text-zinc-500 text-xs mt-0.5 truncate">
+            <p className="text-gray-400 text-xs mt-0.5 truncate">
               {asset.project.name}
             </p>
           )}
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs text-zinc-600 bg-zinc-800 px-1.5 py-0.5 rounded">
+            <span className="text-xs text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded">
               {asset.productionStatus === "ORIGINAL"
                 ? "原本"
                 : asset.productionStatus === "EDITED"
@@ -112,7 +112,7 @@ export function AssetCard({ asset }: { asset: Asset }) {
                 : asset.productionStatus}
             </span>
             {asset.primarySeason && (
-              <span className="text-xs text-zinc-600">
+              <span className="text-xs text-gray-300">
                 {asset.primarySeason === "SPRING"
                   ? "春"
                   : asset.primarySeason === "SUMMER"

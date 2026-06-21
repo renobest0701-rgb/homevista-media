@@ -14,15 +14,15 @@ export default async function ClientLayout({
   if (!isClient) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-gray-50">
       {/* Client portal minimal header */}
-      <header className="border-b border-zinc-800 px-8 py-4 flex items-center justify-between">
+      <header className="border-b border-gray-200 px-8 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-white font-bold text-sm">HOMEVISTA</h1>
-          <p className="text-zinc-500 text-xs">デベロッパーポータル</p>
+          <h1 className="text-gray-900 font-bold text-sm">HOMEVISTA</h1>
+          <p className="text-gray-400 text-xs">デベロッパーポータル</p>
         </div>
         <form action="/api/auth/logout" method="POST">
-          <button type="submit" className="text-xs text-zinc-500 hover:text-white transition-colors">
+          <button type="submit" className="text-xs text-gray-400 hover:text-gray-900 transition-colors">
             ログアウト
           </button>
         </form>

@@ -89,30 +89,30 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-          <h2 className="text-white font-semibold">{tr.newProject}</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+    <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white border border-gray-300 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h2 className="text-gray-900 font-semibold">{tr.newProject}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-900">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.projectName} <span className="text-red-400">*</span></label>
-            <input {...register("name")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500" />
+            <label className="block text-sm text-gray-500 mb-1">{tr.projectName} <span className="text-red-400">*</span></label>
+            <input {...register("name")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500" />
             {errors.name && <p className="text-red-400 text-xs mt-1">{tr.projectName}</p>}
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.propertyName}</label>
-            <input {...register("propertyName")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500" />
+            <label className="block text-sm text-gray-500 mb-1">{tr.propertyName}</label>
+            <input {...register("propertyName")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500" />
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.propertyType}</label>
-            <select {...register("propertyType")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+            <label className="block text-sm text-gray-500 mb-1">{tr.propertyType}</label>
+            <select {...register("propertyType")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none">
               <option value="">{tr.select}</option>
               {PROPERTY_TYPES.map((t) => (
                 <option key={t.code} value={t.code}>{t.label}</option>
@@ -122,8 +122,8 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">{tr.prefecture}</label>
-              <select {...register("prefectureCode")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+              <label className="block text-sm text-gray-500 mb-1">{tr.prefecture}</label>
+              <select {...register("prefectureCode")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none">
                 <option value="">{tr.selectPref}</option>
                 {PREFECTURES.map((p) => (
                   <option key={p.code} value={p.code}>{lang === "zh" ? p.zh : p.ja}</option>
@@ -131,19 +131,19 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">{tr.municipality}</label>
-              <input {...register("municipalityCode")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500" />
+              <label className="block text-sm text-gray-500 mb-1">{tr.municipality}</label>
+              <input {...register("municipalityCode")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.address}</label>
-            <input {...register("address")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500" />
+            <label className="block text-sm text-gray-500 mb-1">{tr.address}</label>
+            <input {...register("address")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500" />
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.defaultVisibility}</label>
-            <select {...register("defaultVisibility")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+            <label className="block text-sm text-gray-500 mb-1">{tr.defaultVisibility}</label>
+            <select {...register("defaultVisibility")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none">
               <option value="INTERNAL">{tr.internal}</option>
               <option value="CLIENT_ONLY">{tr.clientOnly}</option>
               <option value="PUBLIC">{tr.public}</option>
@@ -153,10 +153,10 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100">
               {tr.cancel}
             </button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-white text-black font-medium rounded-lg hover:bg-zinc-100 disabled:opacity-40">
+            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-gray-900 text-gray-900 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-40">
               {isSubmitting ? tr.creating : tr.create}
             </button>
           </div>

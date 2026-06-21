@@ -60,19 +60,19 @@ export function CreateShootModal({ onClose, defaultProjectId }: { onClose: () =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-          <h2 className="text-white font-semibold">{tr.newShoot}</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+    <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white border border-gray-300 rounded-2xl w-full max-w-lg">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h2 className="text-gray-900 font-semibold">{tr.newShoot}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-900">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.projects} <span className="text-red-400">*</span></label>
-            <select {...register("projectId")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+            <label className="block text-sm text-gray-500 mb-1">{tr.projects} <span className="text-red-400">*</span></label>
+            <select {...register("projectId")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none">
               <option value="">{tr.selectProject}</option>
               {(projects as Record<string, unknown>[]).map((p) => (
                 <option key={String(p.id)} value={String(p.id)}>{String(p.name)}</option>
@@ -82,40 +82,40 @@ export function CreateShootModal({ onClose, defaultProjectId }: { onClose: () =>
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.shootName} <span className="text-red-400">*</span></label>
+            <label className="block text-sm text-gray-500 mb-1">{tr.shootName} <span className="text-red-400">*</span></label>
             <input
               {...register("name")}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500"
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500"
             />
             {errors.name && <p className="text-red-400 text-xs mt-1">{tr.shootName}</p>}
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.shootDate} <span className="text-red-400">*</span></label>
+            <label className="block text-sm text-gray-500 mb-1">{tr.shootDate} <span className="text-red-400">*</span></label>
             <input
               {...register("shootDate")}
               type="date"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500"
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500"
             />
             {errors.shootDate && <p className="text-red-400 text-xs mt-1">{tr.shootDate}</p>}
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">{tr.notes}</label>
+            <label className="block text-sm text-gray-500 mb-1">{tr.notes}</label>
             <textarea
               {...register("notes")}
               rows={3}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 resize-none"
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-zinc-500 resize-none"
             />
           </div>
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100">
               {tr.cancel}
             </button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-white text-black font-medium rounded-lg hover:bg-zinc-100 disabled:opacity-40">
+            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-gray-900 text-gray-900 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-40">
               {isSubmitting ? tr.creating : tr.create}
             </button>
           </div>

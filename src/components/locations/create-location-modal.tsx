@@ -64,41 +64,41 @@ export function CreateLocationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-md">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-          <h2 className="text-white font-semibold">撮影場所を追加</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white"><X className="h-5 w-5" /></button>
+    <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white border border-gray-300 rounded-2xl w-full max-w-md">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h2 className="text-gray-900 font-semibold">撮影場所を追加</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">場所名 <span className="text-red-400">*</span></label>
-            <input {...register("name")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none" placeholder="例：Aタワー エントランス" />
+            <label className="block text-sm text-gray-500 mb-1">場所名 <span className="text-red-400">*</span></label>
+            <input {...register("name")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none" placeholder="例：Aタワー エントランス" />
             {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">正式名称</label>
-            <input {...register("officialName")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none" />
+            <label className="block text-sm text-gray-500 mb-1">正式名称</label>
+            <input {...register("officialName")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none" />
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">種別</label>
-            <select {...register("locationType")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+            <label className="block text-sm text-gray-500 mb-1">種別</label>
+            <select {...register("locationType")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none">
               <option value="">選択</option>
               {LOCATION_TYPES.map((t) => <option key={t.code} value={t.code}>{t.ja}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">住所・場所の説明</label>
-            <input {...register("address")} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none" />
+            <label className="block text-sm text-gray-500 mb-1">住所・場所の説明</label>
+            <input {...register("address")} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none" />
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">メモ</label>
-            <textarea {...register("notes")} rows={2} className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none resize-none" />
+            <label className="block text-sm text-gray-500 mb-1">メモ</label>
+            <textarea {...register("notes")} rows={2} className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none resize-none" />
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800">キャンセル</button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-white text-black font-medium rounded-lg hover:bg-zinc-100 disabled:opacity-40">
+            <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100">キャンセル</button>
+            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-gray-900 text-gray-900 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-40">
               {isSubmitting ? "作成中..." : "場所を作成"}
             </button>
           </div>
