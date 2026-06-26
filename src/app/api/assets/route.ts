@@ -21,6 +21,9 @@ export const GET = withAuth(async ({ user, req }) => {
   const timeOfDay = searchParams.get("timeOfDay");
   const visibility = searchParams.get("visibility");
   const peoplePresent = searchParams.get("peoplePresent");
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
+  const tagIds = searchParams.get("tagIds")?.split(",").filter(Boolean) ?? [];
 
   const isClientRole = user.role === "CLIENT_ADMIN" || user.role === "CLIENT_USER";
   const isUploader = user.role === "UPLOADER";
@@ -62,6 +65,19 @@ export const GET = withAuth(async ({ user, req }) => {
     ...(timeOfDay ? { OR: [{ primaryTimeOfDay: timeOfDay }, { mixedTimeOfDay: { has: timeOfDay } }] } : {}),
     ...(visibility ? { visibility } : {}),
     ...(peoplePresent !== null ? { peoplePresent: peoplePresent === "true" } : {}),
+    ...(dateFrom || dateTo
+      ? {
+          shoot: {
+            shootDate: {
+              ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+              ...(dateTo ? { lte: new Date(dateTo + "T23:59:59Z") } : {}),
+            },
+          },
+        }
+      : {}),
+    ...(tagIds.length > 0
+      ? { tags: { some: { tagId: { in: tagIds }, status: "APPROVED" } } }
+      : {}),
   };
 
   const [total, assets] = await Promise.all([

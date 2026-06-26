@@ -15,9 +15,11 @@ import {
   Tag,
   Shield,
   BarChart2,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/lib/i18n/context";
+import { GlobalSearch } from "./global-search";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -53,8 +55,13 @@ export function Sidebar() {
         </span>
       </div>
 
+      {/* Search */}
+      <div className="px-3 pt-3 pb-1">
+        <GlobalSearch />
+      </div>
+
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
         {navItems.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
@@ -92,6 +99,22 @@ export function Sidebar() {
             {label}
           </Link>
         ))}
+
+        {/* Help */}
+        <div className="pt-2">
+          <Link
+            href="/help"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+              pathname === "/help"
+                ? "bg-gray-100 text-gray-900"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/60"
+            )}
+          >
+            <HelpCircle className="h-4 w-4 flex-shrink-0" />
+            使い方ガイド
+          </Link>
+        </div>
       </nav>
 
       {/* Language toggle + version */}

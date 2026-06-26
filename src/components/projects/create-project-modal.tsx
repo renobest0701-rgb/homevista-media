@@ -47,7 +47,7 @@ const PREFECTURES = [
   { code: "okinawa", ja: "沖縄", zh: "冲绳" },
 ];
 
-export function CreateProjectModal({ onClose }: { onClose: () => void }) {
+export function CreateProjectModal({ onClose, onCreated }: { onClose: () => void; onCreated?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const qc = useQueryClient();
@@ -80,6 +80,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
         throw new Error(err.error ?? tr.errorOccurred);
       }
       await qc.invalidateQueries({ queryKey: ["projects"] });
+      onCreated?.();
       onClose();
     } catch (e) {
       setError(String(e instanceof Error ? e.message : e));
