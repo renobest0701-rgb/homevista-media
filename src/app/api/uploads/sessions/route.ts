@@ -24,6 +24,9 @@ const createSessionSchema = z.object({
   productionStatus: z.enum(["ORIGINAL", "SELECTED_ORIGINAL", "EDITED"]).default("ORIGINAL"),
   visibility: z.enum(["INTERNAL", "CLIENT_ONLY", "PUBLIC"]).default("INTERNAL"),
   peoplePresent: z.boolean().default(false),
+  weather: z.enum(["SUNNY", "CLOUDY", "RAINY", "SNOWY", "AFTER_TYPHOON", "NOT_APPLICABLE"]).optional(),
+  primaryTimeOfDay: z.enum(["EARLY_MORNING", "MORNING", "MIDDAY", "AFTERNOON", "DUSK", "TWILIGHT", "NIGHT", "NIGHT_VIEW"]).optional(),
+  tagIds: z.array(z.string().uuid()).optional(),
   notes: z.string().optional(),
 });
 
@@ -73,6 +76,8 @@ export const POST = withAuth(async ({ user, req }) => {
         productionStatus: parsed.data.productionStatus,
         visibility: parsed.data.visibility,
         peoplePresent: parsed.data.peoplePresent,
+        weather: parsed.data.weather,
+        primaryTimeOfDay: parsed.data.primaryTimeOfDay,
         notes: parsed.data.notes,
       },
     },
@@ -94,6 +99,8 @@ export const POST = withAuth(async ({ user, req }) => {
           productionStatus: parsed.data.productionStatus,
           visibility: parsed.data.visibility,
           peoplePresent: parsed.data.peoplePresent,
+          weather: parsed.data.weather,
+          primaryTimeOfDay: parsed.data.primaryTimeOfDay,
           notes: parsed.data.notes,
           reviewStatus: "PENDING",
           rightsStatus: "PENDING",
@@ -112,10 +119,25 @@ export const POST = withAuth(async ({ user, req }) => {
       if (methodCode) {
         const methodTag = await prisma.masterTag.findUnique({ where: { code: methodCode } });
         if (methodTag) {
-          await prisma.assetTag.create({
-            data: { assetId: asset.id, tagId: methodTag.id, status: "APPROVED", source: "SYSTEM" },
+          await prisma.assetTag.upsert({
+            where: { assetId_tagId: { assetId: asset.id, tagId: methodTag.id } },
+            update: {},
+            create: { assetId: asset.id, tagId: methodTag.id, status: "APPROVED", source: "SYSTEM" },
           });
         }
+      }
+
+      // Apply user-selected tags (manual, suggested status)
+      if (parsed.data.tagIds && parsed.data.tagIds.length > 0) {
+        await Promise.all(
+          parsed.data.tagIds.map((tagId) =>
+            prisma.assetTag.upsert({
+              where: { assetId_tagId: { assetId: asset.id, tagId } },
+              update: {},
+              create: { assetId: asset.id, tagId, status: "SUGGESTED", source: "MANUAL" },
+            })
+          )
+        );
       }
 
       const assetFile = await prisma.assetFile.create({

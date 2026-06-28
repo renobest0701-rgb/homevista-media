@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import {
   Upload, CheckCircle, AlertCircle, Loader2, X,
-  FileVideo, FileImage, Plus, MapPin, Tag as TagIcon,
+  FileVideo, FileImage, Plus, MapPin, Tag as TagIcon, Camera,
 } from "lucide-react";
 import { formatBytes } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -34,33 +34,65 @@ type TagOption = { id: string; code: string; labelJa: string; labelEn?: string }
 
 type Step = 1 | 2 | 3 | 4;
 
+type ShootMethod = "STANDARD" | "DRONE" | "VR_360" | "OTHER";
+
+// ─── Enum-aligned constants ────────────────────────────────────────────────
+
 const LOCATION_TYPES = [
-  { value: "PROPERTY",  ja: "物件内", zh: "物业内" },
-  { value: "STATION",   ja: "駅周辺", zh: "车站附近" },
-  { value: "PARK",      ja: "公園",   zh: "公园" },
+  { value: "PROPERTY",  ja: "物件内",   zh: "物业内" },
+  { value: "STATION",   ja: "駅周辺",   zh: "车站附近" },
+  { value: "PARK",      ja: "公園",     zh: "公园" },
   { value: "BEACH",     ja: "海・海辺", zh: "海滩" },
-  { value: "STREET",    ja: "街並み", zh: "街道" },
-  { value: "FACILITY",  ja: "施設",   zh: "设施" },
-  { value: "NATURE",    ja: "自然",   zh: "自然" },
-  { value: "OTHER",     ja: "その他", zh: "其他" },
+  { value: "STREET",    ja: "街並み",   zh: "街道" },
+  { value: "FACILITY",  ja: "施設",     zh: "设施" },
+  { value: "NATURE",    ja: "自然",     zh: "自然" },
+  { value: "OTHER",     ja: "その他",   zh: "其他" },
 ];
 
+// Aligned with schema Weather enum
 const WEATHER_OPTIONS = [
-  { value: "SUNNY",    ja: "晴れ",  zh: "晴天" },
-  { value: "CLOUDY",   ja: "曇り",  zh: "阴天" },
-  { value: "RAINY",    ja: "雨",    zh: "雨天" },
-  { value: "SNOWY",    ja: "雪",    zh: "雪天" },
-  { value: "GOLDEN_HOUR", ja: "マジックアワー", zh: "黄金时段" },
+  { value: "SUNNY",          ja: "晴れ",           zh: "晴天" },
+  { value: "CLOUDY",         ja: "曇り",           zh: "阴天" },
+  { value: "RAINY",          ja: "雨",             zh: "雨天" },
+  { value: "SNOWY",          ja: "雪",             zh: "雪天" },
+  { value: "AFTER_TYPHOON",  ja: "台風後",         zh: "台风后" },
+  { value: "NOT_APPLICABLE", ja: "室内・該当なし", zh: "室内/不适用" },
 ];
 
+// Aligned with schema TimeOfDay enum
 const TIME_OF_DAY_OPTIONS = [
-  { value: "DAWN",      ja: "夜明け",   zh: "黎明" },
-  { value: "MORNING",   ja: "朝",       zh: "早晨" },
-  { value: "DAYTIME",   ja: "昼",       zh: "白天" },
-  { value: "AFTERNOON", ja: "午後",     zh: "下午" },
-  { value: "SUNSET",    ja: "夕暮れ",   zh: "日落" },
-  { value: "NIGHT",     ja: "夜間",     zh: "夜间" },
+  { value: "EARLY_MORNING", ja: "早朝",     zh: "凌晨/黎明" },
+  { value: "MORNING",       ja: "朝",       zh: "早晨" },
+  { value: "MIDDAY",        ja: "昼",       zh: "正午" },
+  { value: "AFTERNOON",     ja: "午後",     zh: "下午" },
+  { value: "DUSK",          ja: "夕暮れ",   zh: "黄昏" },
+  { value: "TWILIGHT",      ja: "トワイライト", zh: "暮色" },
+  { value: "NIGHT",         ja: "夜間",     zh: "夜间" },
+  { value: "NIGHT_VIEW",    ja: "夜景",     zh: "夜景" },
 ];
+
+const SHOOT_METHODS: { value: ShootMethod; ja: string; zh: string; icon: string }[] = [
+  { value: "STANDARD", ja: "通常撮影",     zh: "常规拍摄",   icon: "📷" },
+  { value: "DRONE",    ja: "ドローン撮影", zh: "无人机拍摄", icon: "🚁" },
+  { value: "VR_360",   ja: "360°・VR",    zh: "360°/VR",   icon: "🔮" },
+  { value: "OTHER",    ja: "その他",       zh: "其他",       icon: "📹" },
+];
+
+/** Infer AssetType from shoot method + MIME type */
+function inferAssetType(method: ShootMethod, mimeType: string): string {
+  const isVideo = mimeType.startsWith("video/");
+  switch (method) {
+    case "DRONE":  return isVideo ? "DRONE_VIDEO" : "DRONE_IMAGE";
+    case "VR_360": return isVideo ? "VIDEO_360"   : "IMAGE";
+    default:       return isVideo ? "VIDEO"        : "IMAGE";
+  }
+}
+
+/** Determine dominant assetType for a batch (first video wins, else image) */
+function inferBatchAssetType(method: ShootMethod, files: UploadFile[]): string {
+  const firstMime = files[0]?.file.type ?? "image/jpeg";
+  return inferAssetType(method, firstMime);
+}
 
 const T = {
   ja: {
@@ -68,30 +100,30 @@ const T = {
     project: "プロジェクト", shoot: "撮影案件", date: "撮影日", team: "撮影チーム",
     location: "撮影場所を選択", next: "次へ", back: "戻る",
     startUpload: "アップロード開始", uploading: "アップロード中...",
-    done: "完了", error: "エラー",
     uploadDone: "アップロード完了", uploadDoneDesc: "素材は管理者の確認後に公開されます",
     dropZone: "動画・静止画をドラッグ＆ドロップ、またはクリックして選択",
     total: "合計", optional: "任意",
     peoplePresent: "人物が映っていますか？", yes: "はい", no: "いいえ",
-    tags: "タグ", weather: "天候", timeOfDay: "時間帯", notes: "補足メモ",
+    shootMethod: "撮影方法", tags: "タグ", weather: "天候", timeOfDay: "時間帯", notes: "補足メモ",
     addLocation: "新しい場所を追加", locationName: "場所名",
     locationType: "場所タイプ", createAndSelect: "作成して選択", cancel: "キャンセル",
-    noLocations: "撮影場所が未登録です", skip: "スキップ",
+    noLocations: "撮影場所が未登録です",
+    uploadError: "アップロードに失敗しました。再試行してください。",
   },
   zh: {
     step1: "确认任务", step2: "拍摄地点", step3: "详细信息", step4: "上传",
     project: "项目", shoot: "拍摄任务", date: "拍摄日期", team: "摄影团队",
     location: "选择拍摄地点", next: "下一步", back: "返回",
     startUpload: "开始上传", uploading: "上传中...",
-    done: "完成", error: "错误",
     uploadDone: "上传完成", uploadDoneDesc: "素材经管理员审核后发布",
     dropZone: "将视频/图片拖放到此处，或点击选择文件",
     total: "总计", optional: "选填",
     peoplePresent: "画面中是否有人物？", yes: "是", no: "否",
-    tags: "标签", weather: "天气", timeOfDay: "时间段", notes: "备注",
+    shootMethod: "拍摄方式", tags: "标签", weather: "天气", timeOfDay: "时间段", notes: "备注",
     addLocation: "新增地点", locationName: "地点名称",
     locationType: "地点类型", createAndSelect: "创建并选择", cancel: "取消",
-    noLocations: "尚无拍摄地点", skip: "跳过",
+    noLocations: "尚无拍摄地点",
+    uploadError: "上传失败，请重试。",
   },
 };
 
@@ -109,6 +141,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
   const [addingLocation, setAddingLocation] = useState(false);
 
   // Step 3
+  const [shootMethod, setShootMethod] = useState<ShootMethod>("STANDARD");
   const [tags, setTags] = useState<TagOption[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [peoplePresent, setPeoplePresent] = useState(false);
@@ -119,12 +152,13 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
   // Step 4
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [allDone, setAllDone] = useState(false);
+  const [sessionError, setSessionError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/masters/tags?limit=100")
-      .then((r) => r.json())
-      .then((d) => setTags(d.data ?? d ?? []));
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => d && setTags(d.data ?? d ?? []));
   }, []);
 
   const addNewLocation = async () => {
@@ -187,6 +221,9 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
 
   const startUpload = async () => {
     if (files.length === 0) return;
+    setSessionError("");
+
+    const assetType = inferBatchAssetType(shootMethod, files);
 
     const sessionRes = await fetch("/api/uploads/sessions", {
       method: "POST",
@@ -197,20 +234,25 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
         tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         files: files.map((f) => ({
           originalFileName: f.file.name,
-          mimeType: f.file.type,
+          mimeType: f.file.type || "application/octet-stream",
           sizeBytes: f.file.size,
           fileRole: "ORIGINAL",
         })),
-        assetType: files[0]?.file.type.startsWith("video/") ? "VIDEO" : "IMAGE",
+        assetType,
         peoplePresent,
         weather: weather || undefined,
         primaryTimeOfDay: timeOfDay || undefined,
-        notes,
+        notes: notes || undefined,
       }),
     });
 
+    if (!sessionRes.ok) {
+      const err = await sessionRes.json().catch(() => ({}));
+      setSessionError((err as { error?: string }).error ?? t.uploadError);
+      return;
+    }
+
     const session = await sessionRes.json();
-    if (!sessionRes.ok) return;
 
     const completedIds: string[] = [];
     const failedIds: string[] = [];
@@ -232,14 +274,14 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
           );
           formData.append("file", uploadFile.file);
           const res = await fetch(fileInfo.uploadUrl, { method: "POST", body: formData });
-          if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
         } else {
           const res = await fetch(fileInfo.uploadUrl, {
             method: "PUT",
             body: uploadFile.file,
-            headers: { "Content-Type": uploadFile.file.type },
+            headers: { "Content-Type": uploadFile.file.type || "application/octet-stream" },
           });
-          if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
         }
         completedIds.push(fileInfo.assetFileId);
         setFiles((prev) =>
@@ -265,6 +307,8 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
   };
 
   const totalSize = files.reduce((s, f) => s + f.file.size, 0);
+  const isUploading = files.some((f) => f.status === "uploading");
+  const stepLabels = [t.step1, t.step2, t.step3, t.step4] as const;
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
@@ -289,31 +333,31 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
 
       {/* Step indicator */}
       <div className="flex border-b border-gray-200 bg-white">
-        {([1, 2, 3, 4] as Step[]).map((s) => {
-          const label = s === 1 ? t.step1 : s === 2 ? t.step2 : s === 3 ? t.step3 : t.step4;
-          return (
-            <div
-              key={s}
-              className={cn(
-                "flex-1 text-center py-3 text-xs font-medium transition-colors border-b-2",
-                step === s
-                  ? "text-gray-900 border-gray-900"
-                  : step > s
-                  ? "text-green-500 border-transparent"
-                  : "text-gray-300 border-transparent"
-              )}
-            >
-              <span className={cn(
-                "inline-flex items-center justify-center w-5 h-5 rounded-full text-xs mr-1.5",
-                step > s ? "bg-green-100 text-green-600" : step === s ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-400"
-              )}>{step > s ? "✓" : s}</span>
-              {label}
-            </div>
-          );
-        })}
+        {([1, 2, 3, 4] as Step[]).map((s) => (
+          <div
+            key={s}
+            className={cn(
+              "flex-1 text-center py-3 text-xs font-medium transition-colors border-b-2",
+              step === s
+                ? "text-gray-900 border-gray-900"
+                : step > s
+                ? "text-green-500 border-transparent"
+                : "text-gray-300 border-transparent"
+            )}
+          >
+            <span className={cn(
+              "inline-flex items-center justify-center w-5 h-5 rounded-full text-xs mr-1.5",
+              step > s ? "bg-green-100 text-green-600" : step === s ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-400"
+            )}>
+              {step > s ? "✓" : s}
+            </span>
+            {stepLabels[s - 1]}
+          </div>
+        ))}
       </div>
 
       <div className="max-w-xl mx-auto px-6 py-8">
+
         {/* STEP 1: Shoot info */}
         {step === 1 && (
           <div className="space-y-4">
@@ -368,7 +412,9 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                       <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm text-gray-900">{sl.location.name}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{sl.location.locationType}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {LOCATION_TYPES.find((lt) => lt.value === sl.location.locationType)?.[lang] ?? sl.location.locationType}
+                        </p>
                       </div>
                       {selectedLocationId === sl.location.id && (
                         <CheckCircle className="h-4 w-4 text-gray-900 flex-shrink-0" />
@@ -435,11 +481,37 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
         {/* STEP 3: Metadata */}
         {step === 3 && (
           <div className="space-y-6">
+
+            {/* Shoot method — drives assetType auto-detection */}
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
+                <Camera className="h-3.5 w-3.5 text-gray-400" />
+                {t.shootMethod}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {SHOOT_METHODS.map((m) => (
+                  <button
+                    key={m.value}
+                    onClick={() => setShootMethod(m.value)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm transition-colors",
+                      shootMethod === m.value
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "border-gray-200 text-gray-600 hover:border-gray-400"
+                    )}
+                  >
+                    <span>{m.icon}</span>
+                    <span>{lang === "zh" ? m.zh : m.ja}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* People present */}
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">{t.peoplePresent}</p>
               <div className="flex gap-3">
-                {[true, false].map((v) => (
+                {([true, false] as const).map((v) => (
                   <button
                     key={String(v)}
                     onClick={() => setPeoplePresent(v)}
@@ -569,28 +641,40 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
               <>
                 {/* Summary chips */}
                 <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                    {SHOOT_METHODS.find((m) => m.value === shootMethod)?.icon}{" "}
+                    {SHOOT_METHODS.find((m) => m.value === shootMethod)?.[lang]}
+                  </span>
                   {selectedLocationId && locations.find((l) => l.location.id === selectedLocationId) && (
                     <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
                       <MapPin className="h-3 w-3" />
                       {locations.find((l) => l.location.id === selectedLocationId)!.location.name}
                     </span>
                   )}
-                  {selectedTagIds.length > 0 && (
-                    <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                      タグ {selectedTagIds.length}件
-                    </span>
-                  )}
                   {weather && (
                     <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                      {WEATHER_OPTIONS.find((w) => w.value === weather)?.[lang === "zh" ? "zh" : "ja"]}
+                      {WEATHER_OPTIONS.find((w) => w.value === weather)?.[lang]}
                     </span>
                   )}
                   {timeOfDay && (
                     <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                      {TIME_OF_DAY_OPTIONS.find((t) => t.value === timeOfDay)?.[lang === "zh" ? "zh" : "ja"]}
+                      {TIME_OF_DAY_OPTIONS.find((tod) => tod.value === timeOfDay)?.[lang]}
+                    </span>
+                  )}
+                  {selectedTagIds.length > 0 && (
+                    <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                      <TagIcon className="h-3 w-3 inline mr-0.5" />{selectedTagIds.length}件
                     </span>
                   )}
                 </div>
+
+                {/* Error message */}
+                {sessionError && (
+                  <div className="mb-4 flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    {sessionError}
+                  </div>
+                )}
 
                 {/* Drop zone */}
                 <div
@@ -601,7 +685,7 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                 >
                   <Upload className="h-8 w-8 text-gray-300 mx-auto mb-3" />
                   <p className="text-sm text-gray-500">{t.dropZone}</p>
-                  <p className="text-xs text-gray-400 mt-1">JPG / PNG / RAW / MP4 / MOV · 最大2GB</p>
+                  <p className="text-xs text-gray-400 mt-1">JPG / PNG / RAW / MP4 / MOV · 最大10GB</p>
                   <input
                     ref={inputRef}
                     type="file"
@@ -624,11 +708,20 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-gray-900 truncate">{f.file.name}</p>
-                          <p className="text-xs text-gray-400">{formatBytes(f.file.size)}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-gray-400">{formatBytes(f.file.size)}</p>
+                            <span className="text-xs text-gray-300">·</span>
+                            <p className="text-xs text-gray-400">
+                              {inferAssetType(shootMethod, f.file.type)}
+                            </p>
+                          </div>
                           {f.status === "uploading" && (
                             <div className="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden">
                               <div className="h-full bg-blue-500 rounded-full w-1/2 animate-pulse" />
                             </div>
+                          )}
+                          {f.status === "error" && f.error && (
+                            <p className="text-xs text-red-400 mt-0.5">{f.error}</p>
                           )}
                         </div>
                         {f.status === "pending" && (
@@ -636,13 +729,13 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                             <X className="h-3.5 w-3.5" />
                           </button>
                         )}
-                        {f.status === "uploading" && <Loader2 className="h-3.5 w-3.5 text-blue-400 animate-spin" />}
-                        {f.status === "done" && <CheckCircle className="h-3.5 w-3.5 text-green-500" />}
-                        {f.status === "error" && <AlertCircle className="h-3.5 w-3.5 text-red-400" />}
+                        {f.status === "uploading" && <Loader2 className="h-3.5 w-3.5 text-blue-400 animate-spin flex-shrink-0" />}
+                        {f.status === "done" && <CheckCircle className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />}
+                        {f.status === "error" && <AlertCircle className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />}
                       </div>
                     ))}
                     <p className="text-xs text-gray-400 px-1">
-                      {t.total}: {files.length} ファイル / {formatBytes(totalSize)}
+                      {t.total}: {files.length} {lang === "zh" ? "个文件" : "ファイル"} / {formatBytes(totalSize)}
                     </p>
                   </div>
                 )}
@@ -650,16 +743,22 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setStep(3)}
-                    className="px-5 py-3 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-100"
+                    disabled={isUploading}
+                    className="px-5 py-3 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-100 disabled:opacity-40"
                   >
                     {t.back}
                   </button>
                   <button
                     onClick={startUpload}
-                    disabled={files.length === 0 || files.some((f) => f.status === "uploading")}
+                    disabled={files.length === 0 || isUploading}
                     className="flex-1 bg-gray-900 text-white font-medium py-3 rounded-xl text-sm disabled:opacity-40"
                   >
-                    {files.some((f) => f.status === "uploading") ? t.uploading : t.startUpload}
+                    {isUploading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t.uploading}
+                      </span>
+                    ) : t.startUpload}
                   </button>
                 </div>
               </>
