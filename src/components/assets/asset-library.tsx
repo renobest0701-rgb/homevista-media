@@ -33,13 +33,14 @@ const EMPTY_FILTERS: Filters = {
 };
 
 const REVIEW_STATUS_LABEL: Record<string, string> = {
-  PENDING: "確認待ち", APPROVED: "承認済み", REJECTED: "却下", IN_REVIEW: "確認中",
+  PENDING: "確認待ち", APPROVED: "承認済み", REJECTED: "却下", IN_REVIEW: "確認中", NEEDS_INFO: "要確認",
 };
 const REVIEW_STATUS_COLOR: Record<string, string> = {
   PENDING: "text-yellow-600 bg-yellow-50",
   APPROVED: "text-green-600 bg-green-50",
   REJECTED: "text-red-600 bg-red-50",
   IN_REVIEW: "text-blue-600 bg-blue-50",
+  NEEDS_INFO: "text-orange-600 bg-orange-50",
 };
 
 export function AssetLibrary() {

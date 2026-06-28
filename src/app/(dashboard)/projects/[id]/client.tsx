@@ -55,6 +55,7 @@ export function ProjectDetailClient({ project: initialProject }: { project: Proj
 
   const handleCreated = async () => {
     const res = await fetch(`/api/projects/${project.id}`);
+    if (!res.ok) return;
     const data = await res.json();
     if (data.id) setProject(data);
   };

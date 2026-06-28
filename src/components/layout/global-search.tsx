@@ -26,17 +26,21 @@ export function GlobalSearch() {
 
   useEffect(() => {
     if (!q.trim()) { setResults([]); return; }
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: controller.signal });
+        if (!res.ok) return;
         const data = await res.json();
         setResults(data.results ?? []);
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") setResults([]);
       } finally {
         setLoading(false);
       }
     }, 200);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timer); controller.abort(); };
   }, [q]);
 
   useEffect(() => {

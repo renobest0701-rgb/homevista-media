@@ -38,8 +38,8 @@ export function ProjectsClient({ initialProjects }: { initialProjects: Project[]
   });
 
   const handleCreated = async () => {
-    // Re-fetch projects after creation
     const res = await fetch("/api/projects?limit=100");
+    if (!res.ok) return;
     const data = await res.json();
     if (data.data) setProjects(data.data);
     await qc.invalidateQueries({ queryKey: ["projects"] });
