@@ -3,16 +3,20 @@ import { withAuth, apiResponse, apiError } from "@/lib/auth/api-handler";
 import { prisma } from "@/lib/db/client";
 import { requireRole } from "@/lib/auth/rbac";
 
-export const GET = withAuth(async ({ req }) => {
+export const GET = withAuth(async ({ user, req }) => {
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, Number(searchParams.get("page") ?? 1));
   const limit = Math.min(100, Number(searchParams.get("limit") ?? 20));
   const status = searchParams.get("status");
   const projectId = searchParams.get("projectId");
 
+  const isClientRole = user.role === "CLIENT_ADMIN" || user.role === "CLIENT_USER";
+
   const where: Record<string, unknown> = {
     ...(status ? { status } : {}),
     ...(projectId ? { projectId } : {}),
+    // CLIENT roles can only see their own org's delivery packages
+    ...(isClientRole ? { clientId: user.organizationId } : {}),
   };
 
   const [total, packages] = await Promise.all([

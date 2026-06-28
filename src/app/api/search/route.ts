@@ -45,9 +45,9 @@ export const GET = withAuth(async ({ req }) => {
 
   return NextResponse.json({
     results: [
-      ...projects.map((p) => ({ type: "project" as const, id: p.id, title: p.propertyName ?? p.name, sub: p.code, status: p.status, href: `/projects` })),
+      ...projects.map((p) => ({ type: "project" as const, id: p.id, title: p.propertyName ?? p.name, sub: p.code, status: p.status, href: `/projects/${p.id}` })),
       ...shoots.map((s) => ({ type: "shoot" as const, id: s.id, title: s.name, sub: (s.project as Record<string, string>)?.name ?? "", status: s.status, href: `/shoots/${s.id}` })),
-      ...assets.map((a) => ({ type: "asset" as const, id: a.id, title: a.title ?? a.assetCode ?? "", sub: a.assetCode ?? "", status: a.reviewStatus, href: `/assets` })),
+      ...assets.map((a) => ({ type: "asset" as const, id: a.id, title: a.title ?? a.assetCode ?? "", sub: a.assetCode ?? "", status: a.reviewStatus, href: `/assets?q=${encodeURIComponent(a.assetCode ?? a.title ?? "")}` })),
     ],
   });
 });

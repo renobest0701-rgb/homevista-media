@@ -58,23 +58,26 @@ export const GET = withAuth(async ({ user, req }) => {
     ...(projectId ? { projectId } : {}),
     ...(shootId ? { shootId } : {}),
     ...(clientId && !isClientRole ? { clientId } : {}),
-    ...(prefectureCode
-      ? { shoot: { project: { prefectureCode } } }
+    // Merge all shoot-level filters into a single key to avoid JS object spread overwrite
+    ...((prefectureCode || dateFrom || dateTo)
+      ? {
+          shoot: {
+            ...(prefectureCode ? { project: { prefectureCode } } : {}),
+            ...(dateFrom || dateTo
+              ? {
+                  shootDate: {
+                    ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+                    ...(dateTo ? { lte: new Date(dateTo + "T23:59:59Z") } : {}),
+                  },
+                }
+              : {}),
+          },
+        }
       : {}),
     ...(season ? { OR: [{ primarySeason: season }, { mixedSeasons: { has: season } }] } : {}),
     ...(timeOfDay ? { OR: [{ primaryTimeOfDay: timeOfDay }, { mixedTimeOfDay: { has: timeOfDay } }] } : {}),
     ...(visibility ? { visibility } : {}),
     ...(peoplePresent !== null ? { peoplePresent: peoplePresent === "true" } : {}),
-    ...(dateFrom || dateTo
-      ? {
-          shoot: {
-            shootDate: {
-              ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
-              ...(dateTo ? { lte: new Date(dateTo + "T23:59:59Z") } : {}),
-            },
-          },
-        }
-      : {}),
     ...(tagIds.length > 0
       ? { tags: { some: { tagId: { in: tagIds }, status: "APPROVED" } } }
       : {}),

@@ -4,13 +4,23 @@ import { ShootsClient } from "./client";
 import { redirect } from "next/navigation";
 
 export default async function ShootsPage() {
+  let session;
   try {
-    await requireSession();
+    session = await requireSession();
   } catch {
     redirect("/login");
   }
 
+  const isUploader = session.role === "UPLOADER";
+  const isClientRole = session.role === "CLIENT_ADMIN" || session.role === "CLIENT_USER";
+  const where = isUploader
+    ? { teamOrgId: session.organizationId }
+    : isClientRole
+    ? { project: { client: { organizationId: session.organizationId } } }
+    : {};
+
   const shoots = await prisma.shoot.findMany({
+    where,
     include: { project: { select: { id: true, name: true, propertyName: true } } },
     orderBy: { shootDate: "desc" },
     take: 100,
