@@ -461,113 +461,91 @@ async function main() {
   const tagView     = await prisma.masterTag.findUnique({ where: { code: "cat-view" } });
   const tagInterior = await prisma.masterTag.findUnique({ where: { code: "cat-interior" } });
 
-  const assetDefs = [
-    // Shoot 1 — Exterior (APPROVED)
+  // Asset definitions — no explicit id, let DB generate UUID
+  type AssetDef = {
+    assetCode: string; shootId: string; projectId: string; clientId: string;
+    assetType: "IMAGE"|"VIDEO"|"DRONE_VIDEO"|"DRONE_IMAGE"|"VIDEO_360"|"VR"|"CG"|"AUDIO"|"THUMBNAIL"|"DOCUMENT";
+    productionStatus: "ORIGINAL"|"SELECTED_ORIGINAL"|"EDITING"|"CLIENT_REVIEW"|"FINAL_DELIVERY"|"WEB_DELIVERY";
+    title: string;
+    reviewStatus: "PENDING"|"IN_REVIEW"|"APPROVED"|"REJECTED"|"NEEDS_INFO";
+    rightsStatus: "PENDING"|"VALID"|"EXPIRED"|"RESTRICTED"|"REVOKED";
+    primarySeason: "SPRING"|"SUMMER"|"AUTUMN"|"WINTER";
+    primaryTimeOfDay: "EARLY_MORNING"|"MORNING"|"MIDDAY"|"AFTERNOON"|"DUSK"|"TWILIGHT"|"NIGHT"|"NIGHT_VIEW";
+    weather: "SUNNY"|"CLOUDY"|"RAINY"|"SNOWY"|"AFTER_TYPHOON"|"NOT_APPLICABLE";
+    visibility: "PUBLIC"|"CLIENT_ONLY"|"INTERNAL";
+    tags: string[];
+  };
+
+  const assetDefs: AssetDef[] = [
     {
-      id: "asset-demo-001", assetCode: "HV-2025-001", shootId: shootExterior.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "IMAGE" as const, productionStatus: "FINAL_DELIVERY" as const,
-      title: "タワー棟 北側外観",
-      reviewStatus: "APPROVED" as const, rightsStatus: "VALID" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "MORNING" as const,
-      weather: "SUNNY" as const, visibility: "CLIENT_ONLY" as const,
-      tags: [tagExterior?.id].filter(Boolean) as string[],
+      assetCode: "HV-2025-001", shootId: shootExterior.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "IMAGE", productionStatus: "FINAL_DELIVERY", title: "タワー棟 北側外観",
+      reviewStatus: "APPROVED", rightsStatus: "VALID", primarySeason: "AUTUMN", primaryTimeOfDay: "MORNING",
+      weather: "SUNNY", visibility: "CLIENT_ONLY", tags: [tagExterior?.id].filter(Boolean) as string[],
     },
     {
-      id: "asset-demo-002", assetCode: "HV-2025-002", shootId: shootExterior.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "IMAGE" as const, productionStatus: "FINAL_DELIVERY" as const,
-      title: "タワー棟 エントランス",
-      reviewStatus: "APPROVED" as const, rightsStatus: "VALID" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "AFTERNOON" as const,
-      weather: "SUNNY" as const, visibility: "CLIENT_ONLY" as const,
-      tags: [tagExterior?.id].filter(Boolean) as string[],
-    },
-    // Shoot 2 — Drone (PENDING / IN_REVIEW)
-    {
-      id: "asset-demo-003", assetCode: "HV-2025-003", shootId: shootDrone.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "DRONE_VIDEO" as const, productionStatus: "EDITING" as const,
-      title: "空撮動画 南東方向",
-      reviewStatus: "IN_REVIEW" as const, rightsStatus: "PENDING" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "MIDDAY" as const,
-      weather: "SUNNY" as const, visibility: "INTERNAL" as const,
-      tags: [tagDrone?.id, tagView?.id].filter(Boolean) as string[],
+      assetCode: "HV-2025-002", shootId: shootExterior.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "IMAGE", productionStatus: "FINAL_DELIVERY", title: "タワー棟 エントランス",
+      reviewStatus: "APPROVED", rightsStatus: "VALID", primarySeason: "AUTUMN", primaryTimeOfDay: "AFTERNOON",
+      weather: "SUNNY", visibility: "CLIENT_ONLY", tags: [tagExterior?.id].filter(Boolean) as string[],
     },
     {
-      id: "asset-demo-004", assetCode: "HV-2025-004", shootId: shootDrone.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "DRONE_IMAGE" as const, productionStatus: "SELECTED_ORIGINAL" as const,
-      title: "空撮静止画 真上",
-      reviewStatus: "PENDING" as const, rightsStatus: "PENDING" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "MIDDAY" as const,
-      weather: "CLOUDY" as const, visibility: "INTERNAL" as const,
-      tags: [tagDrone?.id].filter(Boolean) as string[],
-    },
-    // NEEDS_INFO status — for testing filter
-    {
-      id: "asset-demo-005", assetCode: "HV-2025-005", shootId: shootDrone.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "DRONE_IMAGE" as const, productionStatus: "ORIGINAL" as const,
-      title: "空撮 夕景（追加情報要確認）",
-      reviewStatus: "NEEDS_INFO" as const, rightsStatus: "PENDING" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "DUSK" as const,
-      weather: "SUNNY" as const, visibility: "INTERNAL" as const,
-      tags: [tagDrone?.id, tagView?.id].filter(Boolean) as string[],
-    },
-    // Shoot 3 — Interior (REJECTED)
-    {
-      id: "asset-demo-006", assetCode: "HV-2025-006", shootId: shootInterior.id,
-      projectId: projectGarden.id, clientId: demoClient.id,
-      assetType: "IMAGE" as const, productionStatus: "CLIENT_REVIEW" as const,
-      title: "リビング 南向き",
-      reviewStatus: "REJECTED" as const, rightsStatus: "PENDING" as const,
-      primarySeason: "WINTER" as const, primaryTimeOfDay: "AFTERNOON" as const,
-      weather: "SUNNY" as const, visibility: "INTERNAL" as const,
-      tags: [tagInterior?.id].filter(Boolean) as string[],
+      assetCode: "HV-2025-003", shootId: shootDrone.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "DRONE_VIDEO", productionStatus: "EDITING", title: "空撮動画 南東方向",
+      reviewStatus: "IN_REVIEW", rightsStatus: "PENDING", primarySeason: "AUTUMN", primaryTimeOfDay: "MIDDAY",
+      weather: "SUNNY", visibility: "INTERNAL", tags: [tagDrone?.id, tagView?.id].filter(Boolean) as string[],
     },
     {
-      id: "asset-demo-007", assetCode: "HV-2025-007", shootId: shootInterior.id,
-      projectId: projectGarden.id, clientId: demoClient.id,
-      assetType: "IMAGE" as const, productionStatus: "ORIGINAL" as const,
-      title: "キッチン 全景",
-      reviewStatus: "PENDING" as const, rightsStatus: "PENDING" as const,
-      primarySeason: "WINTER" as const, primaryTimeOfDay: "AFTERNOON" as const,
-      weather: "CLOUDY" as const, visibility: "INTERNAL" as const,
-      tags: [tagInterior?.id].filter(Boolean) as string[],
+      assetCode: "HV-2025-004", shootId: shootDrone.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "DRONE_IMAGE", productionStatus: "SELECTED_ORIGINAL", title: "空撮静止画 真上",
+      reviewStatus: "PENDING", rightsStatus: "PENDING", primarySeason: "AUTUMN", primaryTimeOfDay: "MIDDAY",
+      weather: "CLOUDY", visibility: "INTERNAL", tags: [tagDrone?.id].filter(Boolean) as string[],
     },
-    // Video asset
     {
-      id: "asset-demo-008", assetCode: "HV-2025-008", shootId: shootExterior.id,
-      projectId: projectTower.id, clientId: demoClient.id,
-      assetType: "VIDEO" as const, productionStatus: "WEB_DELIVERY" as const,
-      title: "プロモーション動画 30秒",
-      reviewStatus: "APPROVED" as const, rightsStatus: "VALID" as const,
-      primarySeason: "AUTUMN" as const, primaryTimeOfDay: "MORNING" as const,
-      weather: "SUNNY" as const, visibility: "PUBLIC" as const,
-      tags: [tagExterior?.id].filter(Boolean) as string[],
+      assetCode: "HV-2025-005", shootId: shootDrone.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "DRONE_IMAGE", productionStatus: "ORIGINAL", title: "空撮 夕景（追加情報要確認）",
+      reviewStatus: "NEEDS_INFO", rightsStatus: "PENDING", primarySeason: "AUTUMN", primaryTimeOfDay: "DUSK",
+      weather: "SUNNY", visibility: "INTERNAL", tags: [tagDrone?.id, tagView?.id].filter(Boolean) as string[],
+    },
+    {
+      assetCode: "HV-2025-006", shootId: shootInterior.id, projectId: projectGarden.id, clientId: demoClient.id,
+      assetType: "IMAGE", productionStatus: "CLIENT_REVIEW", title: "リビング 南向き",
+      reviewStatus: "REJECTED", rightsStatus: "PENDING", primarySeason: "WINTER", primaryTimeOfDay: "AFTERNOON",
+      weather: "SUNNY", visibility: "INTERNAL", tags: [tagInterior?.id].filter(Boolean) as string[],
+    },
+    {
+      assetCode: "HV-2025-007", shootId: shootInterior.id, projectId: projectGarden.id, clientId: demoClient.id,
+      assetType: "IMAGE", productionStatus: "ORIGINAL", title: "キッチン 全景",
+      reviewStatus: "PENDING", rightsStatus: "PENDING", primarySeason: "WINTER", primaryTimeOfDay: "AFTERNOON",
+      weather: "CLOUDY", visibility: "INTERNAL", tags: [tagInterior?.id].filter(Boolean) as string[],
+    },
+    {
+      assetCode: "HV-2025-008", shootId: shootExterior.id, projectId: projectTower.id, clientId: demoClient.id,
+      assetType: "VIDEO", productionStatus: "WEB_DELIVERY", title: "プロモーション動画 30秒",
+      reviewStatus: "APPROVED", rightsStatus: "VALID", primarySeason: "AUTUMN", primaryTimeOfDay: "MORNING",
+      weather: "SUNNY", visibility: "PUBLIC", tags: [tagExterior?.id].filter(Boolean) as string[],
     },
   ];
 
+  // Track created/found asset IDs by assetCode for downstream use
+  const assetIdMap: Record<string, string> = {};
+
   for (const a of assetDefs) {
     const { tags, ...assetFields } = a;
-    await prisma.asset.upsert({
-      where: { id: a.id },
+    // Upsert by assetCode (unique) — DB generates UUID if new
+    const asset = await prisma.asset.upsert({
+      where: { assetCode: a.assetCode },
       update: {},
       create: assetFields,
+      select: { id: true },
     });
+    assetIdMap[a.assetCode] = asset.id;
 
-    // Upsert approved tags
     for (const tagId of tags) {
       await prisma.assetTag.upsert({
-        where: { assetId_tagId: { assetId: a.id, tagId } },
+        where: { assetId_tagId: { assetId: asset.id, tagId } },
         update: {},
-        create: {
-          assetId: a.id,
-          tagId,
-          source: "MANUAL",
-          status: "APPROVED",
-        },
+        create: { assetId: asset.id, tagId, source: "MANUAL", status: "APPROVED" },
       });
     }
   }
@@ -587,7 +565,9 @@ async function main() {
     },
   });
 
-  for (const [i, assetId] of ["asset-demo-001", "asset-demo-002", "asset-demo-008"].entries()) {
+  for (const [i, assetCode] of ["HV-2025-001", "HV-2025-002", "HV-2025-008"].entries()) {
+    const assetId = assetIdMap[assetCode];
+    if (!assetId) continue;
     await prisma.deliveryPackageAsset.upsert({
       where: { deliveryPackageId_assetId: { deliveryPackageId: deliveryPkg.id, assetId } },
       update: {},
@@ -605,9 +585,9 @@ async function main() {
   // ── Audit Log samples ─────────────────────────────────────────
   const auditSamples = [
     { userId: pmUser.id, organizationId: hvOrg.id, entityType: "Project", entityId: projectTower.id, action: "PROJECT_CREATED" },
-    { userId: uploaderUser.id, organizationId: shootOrg.id, entityType: "Asset", entityId: "asset-demo-001", action: "ASSET_UPLOADED" },
-    { userId: assetAdminUser.id, organizationId: hvOrg.id, entityType: "Asset", entityId: "asset-demo-001", action: "ASSET_APPROVED" },
-    { userId: assetAdminUser.id, organizationId: hvOrg.id, entityType: "Asset", entityId: "asset-demo-006", action: "ASSET_REJECTED" },
+    { userId: uploaderUser.id, organizationId: shootOrg.id, entityType: "Asset", entityId: assetIdMap["HV-2025-001"] ?? "HV-2025-001", action: "ASSET_UPLOADED" },
+    { userId: assetAdminUser.id, organizationId: hvOrg.id, entityType: "Asset", entityId: assetIdMap["HV-2025-001"] ?? "HV-2025-001", action: "ASSET_APPROVED" },
+    { userId: assetAdminUser.id, organizationId: hvOrg.id, entityType: "Asset", entityId: assetIdMap["HV-2025-006"] ?? "HV-2025-006", action: "ASSET_REJECTED" },
     { userId: pmUser.id, organizationId: hvOrg.id, entityType: "DeliveryPackage", entityId: deliveryPkg.id, action: "DELIVERY_CREATED" },
   ];
 

@@ -4,9 +4,9 @@ import { requireRole } from "@/lib/auth/rbac";
 import { prisma } from "@/lib/db/client";
 
 const createSchema = z.object({
-  assetId: z.string().uuid(),
-  siteId: z.string().uuid().optional(),
-  projectId: z.string().uuid().optional(),
+  assetId: z.string().min(1),
+  siteId: z.string().min(1).optional(),
+  projectId: z.string().min(1).optional(),
   channelType: z.enum([
     "AREA_SITE", "PROPERTY_SITE", "CLIENT_PORTAL", "CORPORATE_SITE",
     "INSTAGRAM", "FACEBOOK", "YOUTUBE", "TIKTOK", "LINE", "EXTERNAL_SITE", "OTHER",
