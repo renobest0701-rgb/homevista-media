@@ -98,7 +98,7 @@ export function CreateLocationModal({
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm text-gray-500 border border-gray-300 rounded-lg hover:bg-gray-100">キャンセル</button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-gray-900 text-gray-900 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-40">
+            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 text-sm bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40">
               {isSubmitting ? "作成中..." : "場所を作成"}
             </button>
           </div>
