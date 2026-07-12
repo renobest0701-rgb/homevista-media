@@ -22,5 +22,5 @@ export default async function UploadPage({
 
   if (!shoot) notFound();
 
-  return <UploadWizard shoot={shoot} />;
+  return <UploadWizard shoot={shoot} uploadToken={token} />;
 }

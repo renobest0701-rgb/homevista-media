@@ -51,12 +51,10 @@ export class OSSStorageProvider implements StorageProvider {
       .update(policyB64)
       .digest("base64");
 
-    const endpoint =
-      process.env.OSS_ENDPOINT ??
-      `https://${this.bucket}.${this.region}.aliyuncs.com`;
+    const uploadUrl = `https://${this.bucket}.${this.region}.aliyuncs.com`;
 
     return {
-      uploadUrl: endpoint,
+      uploadUrl,
       objectKey,
       fields: {
         OSSAccessKeyId: this.accessKeyId,

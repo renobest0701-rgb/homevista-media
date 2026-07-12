@@ -127,7 +127,7 @@ const T = {
   },
 };
 
-export function UploadWizard({ shoot }: { shoot: Shoot }) {
+export function UploadWizard({ shoot, uploadToken }: { shoot: Shoot; uploadToken?: string }) {
   const [lang, setLang] = useState<"ja" | "zh">("ja");
   const t = T[lang];
   const [step, setStep] = useState<Step>(1);
@@ -225,11 +225,14 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
 
     const assetType = inferBatchAssetType(shootMethod, files);
 
-    const sessionRes = await fetch("/api/uploads/sessions", {
+    // Token-based page → use public token-sessions endpoint (no auth cookie needed)
+    // Logged-in uploader → use authenticated sessions endpoint
+    const endpoint = uploadToken ? "/api/uploads/token-sessions" : "/api/uploads/sessions";
+    const sessionRes = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        shootId: shoot.id,
+        ...(uploadToken ? { uploadToken } : { shootId: shoot.id }),
         shootLocationId: selectedLocationId || undefined,
         tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
         files: files.map((f) => ({
@@ -300,7 +303,11 @@ export function UploadWizard({ shoot }: { shoot: Shoot }) {
     await fetch(`/api/uploads/${session.sessionId}/complete`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completedFileIds: completedIds, failedFileIds: failedIds }),
+      body: JSON.stringify({
+        completedFileIds: completedIds,
+        failedFileIds: failedIds,
+        ...(uploadToken ? { uploadToken } : {}),
+      }),
     });
 
     if (failedIds.length === 0) setAllDone(true);
