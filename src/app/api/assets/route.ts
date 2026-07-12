@@ -24,6 +24,8 @@ export const GET = withAuth(async ({ user, req }) => {
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
   const tagIds = searchParams.get("tagIds")?.split(",").filter(Boolean) ?? [];
+  // assetTypeGroup: "IMAGE" = IMAGE/DRONE_IMAGE/CG/RAW, "VIDEO" = VIDEO/DRONE_VIDEO/VIDEO_360/VR
+  const assetTypeGroup = searchParams.get("assetTypeGroup");
 
   const isClientRole = user.role === "CLIENT_ADMIN" || user.role === "CLIENT_USER";
   const isUploader = user.role === "UPLOADER";
@@ -51,7 +53,11 @@ export const GET = withAuth(async ({ user, req }) => {
           ],
         }
       : {}),
-    ...(assetType ? { assetType } : {}),
+    ...(assetTypeGroup === "IMAGE"
+      ? { assetType: { in: ["IMAGE", "DRONE_IMAGE", "CG", "RAW"] } }
+      : assetTypeGroup === "VIDEO"
+      ? { assetType: { in: ["VIDEO", "DRONE_VIDEO", "VIDEO_360", "VR"] } }
+      : assetType ? { assetType } : {}),
     ...(productionStatus ? { productionStatus } : {}),
     ...(reviewStatus ? { reviewStatus } : {}),
     ...(rightsStatus ? { rightsStatus } : {}),
@@ -89,8 +95,9 @@ export const GET = withAuth(async ({ user, req }) => {
       where,
       include: {
         files: {
-          where: { fileRole: { in: ["THUMBNAIL", "PREVIEW"] }, isCurrent: true },
-          select: { id: true, fileRole: true, objectKey: true, width: true, height: true, durationSeconds: true },
+          where: { fileRole: { in: ["THUMBNAIL", "PREVIEW", "ORIGINAL", "SELECTED_ORIGINAL"] }, isCurrent: true },
+          select: { id: true, fileRole: true, objectKey: true, width: true, height: true, durationSeconds: true, mimeType: true },
+          take: 6,
         },
         tags: {
           where: { status: "APPROVED" },
