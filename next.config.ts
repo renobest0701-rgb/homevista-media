@@ -13,9 +13,14 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 3600,
   },
 
-  // Aggressive headers for static assets
   async headers() {
+    const noRobots = [
+      { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+    ];
     return [
+      // Block all crawlers on every route
+      { source: "/(.*)", headers: noRobots },
+      // Long cache for immutable static assets
       {
         source: "/_next/static/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],

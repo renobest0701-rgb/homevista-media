@@ -6,8 +6,22 @@ import { Providers } from "@/components/layout/providers";
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HOMEVISTA Media Asset Platform",
-  description: "動画・静止画メディア資産管理プラットフォーム",
+  // Generic title — no mention of internal system purpose in search results
+  title: "HOMEVISTA",
+  description: "Private system",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-snippet": -1,
+      "max-image-preview": "none",
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({
